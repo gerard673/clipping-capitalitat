@@ -2244,3 +2244,3236 @@ textarea {
 .content:has(.importPage) {
   overflow-x: hidden;
 }
+
+/* --- EDITORIAL BACKDROP --- */
+
+.desktop {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.55), transparent 40%),
+    linear-gradient(180deg, #ececec 0%, #dddddd 100%);
+}
+
+.window {
+  position: relative;
+  z-index: 20;
+}
+
+.newsBackdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.newsSheet {
+  position: absolute;
+  opacity: 0.12;
+  filter: grayscale(1) contrast(.9) brightness(1.05);
+  transform-origin: center;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+}
+
+.newsSheet img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(0,0,0,.15);
+  background: white;
+}
+
+.newsSheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.18);
+}
+
+@media (max-width: 1200px) {
+  .newsSheet {
+    opacity: 0.09;
+  }
+
+  .newsSheet:nth-child(n+9) {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .newsSheet:nth-child(n+7) {
+    display: none;
+  }
+}
+
+/* --- EDITORIAL BACKDROP V2 --- */
+
+.desktop {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.6), transparent 44%),
+    linear-gradient(180deg, #e9e9e9 0%, #dcdcdc 100%) !important;
+}
+
+.window {
+  position: relative;
+  z-index: 20;
+}
+
+.newsBackdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.newsSheet {
+  position: absolute;
+  background: white;
+  border: 1px solid rgba(0,0,0,.26);
+  box-shadow: 0 18px 40px rgba(0,0,0,.16);
+  transform-origin: center;
+}
+
+.realNewsSheet {
+  opacity: .28;
+  filter: grayscale(1) contrast(.92) brightness(1.04);
+}
+
+.realNewsSheet img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: white;
+}
+
+.realNewsSheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.12);
+}
+
+.fakeNewsSheet {
+  opacity: .22;
+  min-height: 330px;
+  padding: 14px;
+  filter: grayscale(1);
+}
+
+.fakeMasthead {
+  border-bottom: 4px solid #111;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -.05em;
+}
+
+.fakeHeadline {
+  height: 54px;
+  margin-bottom: 12px;
+  background:
+    linear-gradient(#111 0 0) 0 0 / 92% 12px no-repeat,
+    linear-gradient(#111 0 0) 0 21px / 76% 12px no-repeat,
+    linear-gradient(#111 0 0) 0 42px / 84% 12px no-repeat;
+}
+
+.fakeColumns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.fakeColumns span {
+  height: 95px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #111 0 4px,
+    transparent 4px 9px
+  );
+}
+
+.fakePhoto {
+  height: 90px;
+  margin-bottom: 12px;
+  background:
+    radial-gradient(circle at 75% 25%, #111 0 20px, transparent 21px),
+    linear-gradient(135deg, #aaa, #fff 55%, #777);
+  border: 1px solid #111;
+}
+
+.fakeLines {
+  display: grid;
+  gap: 6px;
+}
+
+.fakeLines i {
+  display: block;
+  height: 7px;
+  background: #111;
+}
+
+.fakeLines i:nth-child(2) {
+  width: 88%;
+}
+
+.fakeLines i:nth-child(3) {
+  width: 72%;
+}
+
+.fakeLines i:nth-child(4) {
+  width: 94%;
+}
+
+@media (max-width: 1300px) {
+  .realNewsSheet {
+    opacity: .22;
+  }
+
+  .newsSheet {
+    transform: scale(.86);
+  }
+}
+
+@media (max-width: 900px) {
+  .newsSheet:nth-child(n+8) {
+    display: none;
+  }
+}
+
+/* --- BACKDROP VISIBILITY FIX --- */
+
+.newsBackdrop {
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+.window {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.newsSheet {
+  opacity: .34 !important;
+}
+
+.realNewsSheet {
+  opacity: .32 !important;
+}
+
+.fakeNewsSheet {
+  opacity: .28 !important;
+}
+
+/* --- BACKDROP FINAL: MANY SMALL BLACK & WHITE SHEETS --- */
+
+.newsBackdrop {
+  z-index: 2 !important;
+}
+
+.window {
+  z-index: 10 !important;
+}
+
+.newsSheet {
+  opacity: 1 !important;
+  filter: grayscale(1) saturate(0) contrast(1.08) brightness(1.01) !important;
+  mix-blend-mode: normal !important;
+  background: white !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.22) !important;
+}
+
+.realNewsSheet,
+.fakeNewsSheet {
+  opacity: 1 !important;
+  filter: grayscale(1) saturate(0) contrast(1.08) brightness(1.01) !important;
+}
+
+.realNewsSheet img {
+  filter: grayscale(1) saturate(0) contrast(1.08) brightness(1.01) !important;
+}
+
+.newsSheet::after,
+.realNewsSheet::after {
+  background: transparent !important;
+}
+
+.fakeNewsSheet {
+  min-height: 150px !important;
+  padding: 8px !important;
+}
+
+.fakeMasthead {
+  font-size: 17px !important;
+  border-bottom: 2px solid #111 !important;
+  margin-bottom: 7px !important;
+  padding-bottom: 4px !important;
+}
+
+.fakeHeadline {
+  height: 34px !important;
+  margin-bottom: 7px !important;
+  background:
+    linear-gradient(#111 0 0) 0 0 / 92% 7px no-repeat,
+    linear-gradient(#111 0 0) 0 13px / 76% 7px no-repeat,
+    linear-gradient(#111 0 0) 0 26px / 84% 7px no-repeat !important;
+}
+
+.fakeColumns {
+  gap: 4px !important;
+  margin-bottom: 7px !important;
+}
+
+.fakeColumns span {
+  height: 48px !important;
+  background: repeating-linear-gradient(
+    to bottom,
+    #111 0 2px,
+    transparent 2px 5px
+  ) !important;
+}
+
+.fakePhoto {
+  height: 42px !important;
+  margin-bottom: 7px !important;
+}
+
+.fakeLines {
+  gap: 3px !important;
+}
+
+.fakeLines i {
+  height: 4px !important;
+}
+
+@media (max-width: 1300px) {
+  .newsSheet {
+    transform-origin: center !important;
+  }
+}
+
+/* --- LARGER OUTER MARGINS FOR NEWSPAPER COLLAGE --- */
+
+.desktop {
+  padding: 58px 76px !important;
+}
+
+.window {
+  width: min(1460px, 100%) !important;
+  height: calc(100vh - 116px) !important;
+  min-height: 720px !important;
+}
+
+@media (max-width: 1100px) {
+  .desktop {
+    padding: 24px !important;
+  }
+
+  .window {
+    height: calc(100vh - 48px) !important;
+    min-height: 720px !important;
+  }
+}
+
+/* --- BACKDROP EXPOSURE ADJUSTMENT --- */
+
+.newsSheet {
+  filter: grayscale(1) saturate(0) contrast(.92) brightness(.86) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.16) !important;
+}
+
+.realNewsSheet,
+.fakeNewsSheet {
+  filter: grayscale(1) saturate(0) contrast(.92) brightness(.86) !important;
+}
+
+.realNewsSheet img {
+  filter: grayscale(1) saturate(0) contrast(.92) brightness(.86) !important;
+}
+
+.newsSheet {
+  opacity: .92 !important;
+}
+
+.realNewsSheet,
+.fakeNewsSheet {
+  opacity: .92 !important;
+}
+
+/* --- BACKDROP BRIGHTNESS UP --- */
+
+.newsSheet {
+  filter: grayscale(1) saturate(0) contrast(.94) brightness(1.12) !important;
+}
+
+.realNewsSheet,
+.fakeNewsSheet {
+  filter: grayscale(1) saturate(0) contrast(.94) brightness(1.12) !important;
+}
+
+.realNewsSheet img {
+  filter: grayscale(1) saturate(0) contrast(.94) brightness(1.12) !important;
+}
+
+/* --- BIGGER BACKDROP SHEETS --- */
+
+.fakeNewsSheet {
+  min-height: 190px !important;
+}
+
+/* --- ARCHIVE FILTERS WITH PHOTO SELECTOR --- */
+
+.archiveFilters {
+  grid-template-columns: minmax(260px, 1.5fr) repeat(5, minmax(130px, 1fr)) !important;
+}
+
+@media (max-width: 1200px) {
+  .archiveFilters {
+    grid-template-columns: 1fr 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .archiveFilters {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* --- BACKDROP CHECKBOX INSIDE ARCHIVE CARDS --- */
+
+.archiveCardImage {
+  position: relative !important;
+}
+
+.backdropCheckbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  background: #ffd400;
+  border: 1px solid #000;
+  color: #000;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.28);
+}
+
+.backdropCheckbox input {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  accent-color: #000;
+  cursor: pointer;
+}
+
+.backdropCheckbox span {
+  line-height: 1;
+}
+
+/* --- IMPORT / RECULLS REDESIGN --- */
+
+.importPage {
+  min-height: 100%;
+  background: #f5f5f5;
+  padding: 24px;
+}
+
+.importHero {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: stretch;
+  background: white;
+  border: 1px solid var(--line);
+  padding: 24px;
+  margin-bottom: 18px;
+}
+
+.importHero h1 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 64px;
+  line-height: .92;
+  letter-spacing: -.06em;
+}
+
+.importHero p {
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 1.45;
+  margin-bottom: 0;
+}
+
+.importHeroStats {
+  display: grid;
+  grid-template-columns: 1fr;
+  border: 1px solid var(--line);
+}
+
+.importHeroStats div {
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.importHeroStats div:last-child {
+  border-bottom: 0;
+}
+
+.importHeroStats b {
+  display: block;
+  font-size: 38px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.importHeroStats span {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.importGridNew {
+  display: grid;
+  grid-template-columns: minmax(420px, .9fr) minmax(520px, 1.1fr);
+  gap: 18px;
+}
+
+.importPanel {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 16px;
+}
+
+.refinedUpload {
+  margin-top: 0;
+}
+
+.selectedFile {
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+  background: #f7f7f7;
+}
+
+.selectedFile b {
+  word-break: break-word;
+}
+
+.selectedFile span {
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.processSteps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+  margin-top: 14px;
+}
+
+.processSteps div {
+  min-height: 96px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 12px;
+}
+
+.processSteps div:nth-child(2n) {
+  border-right: 0;
+}
+
+.processSteps div:nth-child(3),
+.processSteps div:nth-child(4) {
+  border-bottom: 0;
+}
+
+.processSteps span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line);
+  background: var(--yellow);
+  font-family: var(--mono);
+  margin-bottom: 10px;
+}
+
+.processSteps b {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.processSteps small {
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.compactDemo {
+  margin-top: 14px;
+}
+
+.emptyImportList {
+  border: 1px dashed #999;
+  padding: 30px;
+  text-align: center;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.recullList {
+  display: grid;
+  gap: 12px;
+  max-height: 680px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.recullCard {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  border: 1px solid var(--line);
+  background: white;
+}
+
+.recullCardIndex {
+  border-right: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 18px;
+  background: var(--yellow);
+}
+
+.recullCardBody {
+  padding: 14px;
+}
+
+.recullCardTop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.recullCardTop span {
+  border: 1px solid var(--line);
+  padding: 4px 6px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  font-size: 9px;
+  background: white;
+}
+
+.recullCard h3 {
+  margin: 0 0 8px;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  line-height: .98;
+  letter-spacing: -.04em;
+}
+
+.recullCard p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.recullCardActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+}
+
+.recullCardActions a,
+.recullCardActions button,
+.recullCardActions span {
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: white;
+  padding: 10px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.recullCardActions a:hover,
+.recullCardActions button:hover {
+  background: var(--yellow);
+}
+
+.recullCardActions button {
+  cursor: pointer;
+}
+
+.recullCardActions > *:last-child {
+  border-right: 0;
+}
+
+@media (max-width: 1100px) {
+  .importHero,
+  .importGridNew {
+    grid-template-columns: 1fr;
+  }
+
+  .processSteps {
+    grid-template-columns: 1fr;
+  }
+
+  .processSteps div,
+  .processSteps div:nth-child(2n),
+  .processSteps div:nth-child(3),
+  .processSteps div:nth-child(4) {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+/* --- FORCE SIDE COLOR PREVIEW VISIBLE --- */
+
+.colorMarginPreview {
+  position: fixed !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  width: 130px !important;
+  transform: translateY(-50%) !important;
+}
+
+.colorMarginPreview.left {
+  left: 20px !important;
+}
+
+.colorMarginPreview.right {
+  right: 20px !important;
+}
+
+.colorMarginPreviewCard {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: 6px 6px 0 rgba(0,0,0,.28) !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreview img {
+  display: block !important;
+  width: 100% !important;
+  height: 170px !important;
+  object-fit: cover !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.colorMarginPreviewMeta {
+  display: grid !important;
+  gap: 2px !important;
+  padding: 7px !important;
+  background: #ffd400 !important;
+  border-top: 1px solid #000 !important;
+  color: #000 !important;
+}
+
+.colorMarginPreviewMeta strong {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.colorMarginPreviewMeta span {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 8px !important;
+  line-height: 1.15 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* --- WIDER SIDE MARGINS FOR ORGANIC PREVIEW --- */
+
+.desktop {
+  padding: 64px 170px !important;
+}
+
+.window {
+  width: min(1360px, 100%) !important;
+  height: calc(100vh - 128px) !important;
+}
+
+@media (max-width: 1250px) {
+  .desktop {
+    padding: 36px 80px !important;
+  }
+
+  .window {
+    height: calc(100vh - 72px) !important;
+  }
+}
+
+/* --- ORGANIC FALLING LEAF COLOR PREVIEW --- */
+
+.colorMarginPreviewLayer {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreviewLayer .floatingLeaf {
+  position: absolute !important;
+  left: var(--leaf-x) !important;
+  top: var(--leaf-y) !important;
+  right: auto !important;
+  width: 164px !important;
+  transform-origin: 50% 12% !important;
+  animation: colorLeafFall 2.25s cubic-bezier(.2,.7,.15,1) forwards !important;
+  opacity: 0;
+}
+
+.colorMarginPreviewLayer .floatingLeaf.left,
+.colorMarginPreviewLayer .floatingLeaf.right {
+  left: var(--leaf-x) !important;
+  right: auto !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: 8px 8px 0 rgba(0,0,0,.24) !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreviewLayer img {
+  display: block !important;
+  width: 100% !important;
+  height: 218px !important;
+  object-fit: cover !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+@keyframes colorLeafFall {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, -12px, 0)
+      rotate(calc(var(--leaf-rotate) - 10deg))
+      scale(var(--leaf-scale));
+  }
+
+  13% {
+    opacity: 1;
+  }
+
+  56% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .35), calc(var(--leaf-drift-y) * .38), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .45)))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + var(--leaf-spin)))
+      scale(var(--leaf-scale));
+  }
+}
+
+/* --- SOFTER ORGANIC PREVIEW FADE --- */
+
+.colorMarginPreviewLayer .floatingLeaf {
+  animation: colorLeafFall 3.45s cubic-bezier(.16, 1, .3, 1) forwards !important;
+  opacity: 0;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  box-shadow: 7px 7px 0 rgba(0,0,0,.18) !important;
+}
+
+@keyframes colorLeafFall {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, -18px, 0)
+      rotate(calc(var(--leaf-rotate) - 7deg))
+      scale(calc(var(--leaf-scale) * .94));
+  }
+
+  18% {
+    opacity: .88;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .12), calc(var(--leaf-drift-y) * .08), 0)
+      rotate(calc(var(--leaf-rotate) - 2deg))
+      scale(var(--leaf-scale));
+  }
+
+  68% {
+    opacity: .88;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .55), calc(var(--leaf-drift-y) * .48), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .45)))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + var(--leaf-spin)))
+      scale(calc(var(--leaf-scale) * .98));
+  }
+}
+
+/* --- MORE SPACED + FLUID FALLING PREVIEW --- */
+
+.colorMarginPreviewLayer .floatingLeaf {
+  animation: colorLeafFall 5.25s cubic-bezier(.12, .82, .22, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  box-shadow: 7px 7px 0 rgba(0,0,0,.16) !important;
+}
+
+@keyframes colorLeafFall {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, -28px, 0)
+      rotate(calc(var(--leaf-rotate) - 9deg))
+      scale(calc(var(--leaf-scale) * .92));
+  }
+
+  14% {
+    opacity: .82;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .08), calc(var(--leaf-drift-y) * .05), 0)
+      rotate(calc(var(--leaf-rotate) - 4deg))
+      scale(calc(var(--leaf-scale) * .98));
+  }
+
+  34% {
+    opacity: .9;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .25), calc(var(--leaf-drift-y) * .20), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .12)))
+      scale(var(--leaf-scale));
+  }
+
+  58% {
+    opacity: .86;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .52), calc(var(--leaf-drift-y) * .46), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .42)))
+      scale(calc(var(--leaf-scale) * 1.01));
+  }
+
+  78% {
+    opacity: .58;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .78), calc(var(--leaf-drift-y) * .74), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .76)))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + var(--leaf-spin)))
+      scale(calc(var(--leaf-scale) * .96));
+  }
+}
+
+/* --- MORE SPACED + FLUID FALLING PREVIEW --- */
+
+.colorMarginPreviewLayer .floatingLeaf {
+  animation: colorLeafFall 5.25s cubic-bezier(.12, .82, .22, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  box-shadow: 7px 7px 0 rgba(0,0,0,.16) !important;
+}
+
+@keyframes colorLeafFall {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, -28px, 0)
+      rotate(calc(var(--leaf-rotate) - 9deg))
+      scale(calc(var(--leaf-scale) * .92));
+  }
+
+  14% {
+    opacity: .82;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .08), calc(var(--leaf-drift-y) * .05), 0)
+      rotate(calc(var(--leaf-rotate) - 4deg))
+      scale(calc(var(--leaf-scale) * .98));
+  }
+
+  34% {
+    opacity: .9;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .25), calc(var(--leaf-drift-y) * .20), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .12)))
+      scale(var(--leaf-scale));
+  }
+
+  58% {
+    opacity: .86;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .52), calc(var(--leaf-drift-y) * .46), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .42)))
+      scale(calc(var(--leaf-scale) * 1.01));
+  }
+
+  78% {
+    opacity: .58;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .78), calc(var(--leaf-drift-y) * .74), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .76)))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + var(--leaf-spin)))
+      scale(calc(var(--leaf-scale) * .96));
+  }
+}
+
+/* --- OPAQUE + SOFTER ORGANIC PREVIEW --- */
+
+.colorMarginPreviewLayer .floatingLeaf {
+  animation: colorLeafFloatOpaque 4.1s cubic-bezier(.18, .86, .18, 1) forwards !important;
+  opacity: 1 !important;
+  will-change: transform !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  opacity: 1 !important;
+  box-shadow: 7px 7px 0 rgba(0,0,0,.16) !important;
+}
+
+.colorMarginPreviewLayer img {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+@keyframes colorLeafFloatOpaque {
+  0% {
+    opacity: 1;
+    transform:
+      translate3d(0, -18px, 0)
+      rotate(calc(var(--leaf-rotate) - 7deg))
+      scale(calc(var(--leaf-scale) * .82));
+  }
+
+  16% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .06), calc(var(--leaf-drift-y) * .04), 0)
+      rotate(calc(var(--leaf-rotate) - 3deg))
+      scale(calc(var(--leaf-scale) * .96));
+  }
+
+  32% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .18), calc(var(--leaf-drift-y) * .14), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .08)))
+      scale(var(--leaf-scale));
+  }
+
+  58% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .48), calc(var(--leaf-drift-y) * .44), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .36)))
+      scale(calc(var(--leaf-scale) * 1.01));
+  }
+
+  82% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .76), calc(var(--leaf-drift-y) * .76), 0)
+      rotate(calc(var(--leaf-rotate) + calc(var(--leaf-spin) * .68)))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + var(--leaf-spin)))
+      scale(calc(var(--leaf-scale) * .94));
+  }
+}
+
+/* --- REFERENCE-LIKE CURSOR POSTER APPEARANCE --- */
+
+.colorMarginPreviewLayer {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreviewLayer .cursorPoster {
+  position: absolute !important;
+  left: var(--leaf-x) !important;
+  top: var(--leaf-y) !important;
+  right: auto !important;
+  width: 178px !important;
+  transform-origin: center !important;
+  animation: cursorPosterReveal 3.05s cubic-bezier(.16, 1, .3, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.colorMarginPreviewLayer .cursorPoster.left,
+.colorMarginPreviewLayer .cursorPoster.right {
+  left: var(--leaf-x) !important;
+  right: auto !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: 7px 7px 0 rgba(0,0,0,.18) !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreviewLayer img {
+  display: block !important;
+  width: 100% !important;
+  height: 236px !important;
+  object-fit: cover !important;
+  filter: none !important;
+}
+
+@keyframes cursorPosterReveal {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, 10px, 0)
+      rotate(calc(var(--leaf-rotate) - 5deg))
+      scale(calc(var(--leaf-scale) * .72));
+  }
+
+  18% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .12), calc(var(--leaf-drift-y) * .12), 0)
+      rotate(calc(var(--leaf-rotate) - 1deg))
+      scale(calc(var(--leaf-scale) * .96));
+  }
+
+  34% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .28), calc(var(--leaf-drift-y) * .28), 0)
+      rotate(var(--leaf-rotate))
+      scale(var(--leaf-scale));
+  }
+
+  72% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .72), calc(var(--leaf-drift-y) * .72), 0)
+      rotate(calc(var(--leaf-rotate) + 2deg))
+      scale(var(--leaf-scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + 5deg))
+      scale(calc(var(--leaf-scale) * .82));
+  }
+}
+
+/* --- CURSOR POSTER WITH ZOOM IN / ZOOM OUT --- */
+
+.colorMarginPreviewLayer .cursorPoster {
+  position: absolute !important;
+  left: var(--leaf-x) !important;
+  top: var(--leaf-y) !important;
+  right: auto !important;
+  width: 178px !important;
+  transform-origin: center center !important;
+  animation: cursorPosterZoomReveal 2.95s cubic-bezier(.2, .9, .2, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.colorMarginPreviewLayer .colorMarginPreviewCard {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: 7px 7px 0 rgba(0,0,0,.18) !important;
+  overflow: hidden !important;
+}
+
+.colorMarginPreviewLayer img {
+  display: block !important;
+  width: 100% !important;
+  height: 236px !important;
+  object-fit: cover !important;
+  filter: none !important;
+}
+
+/* Efecte: surt d’un punt, creix, es manté i es torna a fer petit */
+@keyframes cursorPosterZoomReveal {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(calc(var(--leaf-rotate) - 4deg))
+      scale(0.08);
+  }
+
+  12% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .05), calc(var(--leaf-drift-y) * .05), 0)
+      rotate(calc(var(--leaf-rotate) - 2deg))
+      scale(0.34);
+  }
+
+  24% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .14), calc(var(--leaf-drift-y) * .14), 0)
+      rotate(calc(var(--leaf-rotate) - 1deg))
+      scale(0.72);
+  }
+
+  36% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .24), calc(var(--leaf-drift-y) * .24), 0)
+      rotate(var(--leaf-rotate))
+      scale(var(--leaf-scale));
+  }
+
+  70% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .64), calc(var(--leaf-drift-y) * .64), 0)
+      rotate(calc(var(--leaf-rotate) + 1deg))
+      scale(var(--leaf-scale));
+  }
+
+  86% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--leaf-drift-x) * .84), calc(var(--leaf-drift-y) * .84), 0)
+      rotate(calc(var(--leaf-rotate) + 3deg))
+      scale(0.62);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+      rotate(calc(var(--leaf-rotate) + 5deg))
+      scale(0.12);
+  }
+}
+
+/* --- DEFINITIVE POP ZOOM EFFECT FOR CURSOR POSTERS --- */
+
+.colorMarginPreviewLayer .cursorPoster {
+  position: absolute !important;
+  left: var(--leaf-x) !important;
+  top: var(--leaf-y) !important;
+  right: auto !important;
+  width: 178px !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  animation: none !important;
+  transform:
+    translate3d(var(--leaf-drift-x), var(--leaf-drift-y), 0)
+    rotate(var(--leaf-rotate)) !important;
+}
+
+.colorMarginPreviewLayer .cursorPoster .colorMarginPreviewCard {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: 7px 7px 0 rgba(0,0,0,.18) !important;
+  overflow: hidden !important;
+  opacity: 1 !important;
+  transform-origin: center center !important;
+  animation: posterPopZoomFinal 3.05s cubic-bezier(.18, .95, .2, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.colorMarginPreviewLayer .cursorPoster img {
+  display: block !important;
+  width: 100% !important;
+  height: 236px !important;
+  object-fit: cover !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+@keyframes posterPopZoomFinal {
+  0% {
+    opacity: 0;
+    transform: scale(.02) rotate(-4deg);
+  }
+
+  8% {
+    opacity: 1;
+    transform: scale(.18) rotate(-3deg);
+  }
+
+  18% {
+    opacity: 1;
+    transform: scale(.52) rotate(-1.5deg);
+  }
+
+  31% {
+    opacity: 1;
+    transform: scale(1.06) rotate(0deg);
+  }
+
+  42% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  72% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  86% {
+    opacity: 1;
+    transform: scale(.48) rotate(2deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(.02) rotate(4deg);
+  }
+}
+
+/* --- CLEAN SIDE POSTER EFFECT --- */
+
+.sidePosterLayer {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.sidePoster {
+  position: absolute !important;
+  left: var(--poster-x) !important;
+  top: var(--poster-y) !important;
+  width: 150px !important;
+  height: 112px !important;
+  transform-origin: center center !important;
+  animation: sidePosterPopClean 2.15s cubic-bezier(.16, 1, .3, 1) forwards !important;
+  will-change: transform, opacity !important;
+}
+
+.sidePosterCard {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  box-shadow: 6px 6px 0 rgba(0,0,0,.18) !important;
+}
+
+.sidePosterCard img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 22% !important;
+  transform: scale(1.55) !important;
+  transform-origin: center 22% !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Neix petit, creix, aguanta, i desapareix petit */
+@keyframes sidePosterPopClean {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(calc(var(--poster-rotate) - 5deg))
+      scale(.12);
+  }
+
+  14% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .08), calc(var(--poster-drift-y) * .08), 0)
+      rotate(calc(var(--poster-rotate) - 2deg))
+      scale(.72);
+  }
+
+  27% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .22), calc(var(--poster-drift-y) * .22), 0)
+      rotate(var(--poster-rotate))
+      scale(1.04);
+  }
+
+  42% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .34), calc(var(--poster-drift-y) * .34), 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  74% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .72), calc(var(--poster-drift-y) * .72), 0)
+      rotate(calc(var(--poster-rotate) + 2deg))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--poster-drift-x), var(--poster-drift-y), 0)
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+/* --- SMOOTHER POSTER APPEARANCE / SAME EXIT --- */
+
+.sidePoster {
+  animation: sidePosterPopClean 2.55s cubic-bezier(.22, .72, .18, 1) forwards !important;
+}
+
+/* Entrada molt més progressiva. Sortida igual de suau. */
+@keyframes sidePosterPopClean {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(calc(var(--poster-rotate) - 5deg))
+      scale(.03);
+  }
+
+  8% {
+    opacity: .35;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .02), calc(var(--poster-drift-y) * .02), 0)
+      rotate(calc(var(--poster-rotate) - 4deg))
+      scale(.12);
+  }
+
+  16% {
+    opacity: .7;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .05), calc(var(--poster-drift-y) * .05), 0)
+      rotate(calc(var(--poster-rotate) - 3deg))
+      scale(.28);
+  }
+
+  26% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .10), calc(var(--poster-drift-y) * .10), 0)
+      rotate(calc(var(--poster-rotate) - 2deg))
+      scale(.52);
+  }
+
+  38% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .18), calc(var(--poster-drift-y) * .18), 0)
+      rotate(calc(var(--poster-rotate) - 1deg))
+      scale(.82);
+  }
+
+  50% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .30), calc(var(--poster-drift-y) * .30), 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  74% {
+    opacity: 1;
+    transform:
+      translate3d(calc(var(--poster-drift-x) * .72), calc(var(--poster-drift-y) * .72), 0)
+      rotate(calc(var(--poster-rotate) + 2deg))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--poster-drift-x), var(--poster-drift-y), 0)
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+/* --- SYMMETRIC APPEAR / DISAPPEAR POSTER ANIMATION --- */
+
+.sidePoster {
+  animation: sidePosterSymmetricPop 2.6s cubic-bezier(.16, 1, .3, 1) forwards !important;
+}
+
+/*
+  0%  → petit i invisible
+  26% → mida normal
+  74% → encara mida normal
+  100% → petit i invisible
+
+  L'entrada i la sortida tenen exactament el mateix temps: 26%.
+*/
+@keyframes sidePosterSymmetricPop {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(
+        calc(var(--poster-drift-x) * -1),
+        calc(var(--poster-drift-y) * -1),
+        0
+      )
+      rotate(calc(var(--poster-rotate) - 4deg))
+      scale(.16);
+  }
+
+  26% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  74% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(
+        var(--poster-drift-x),
+        var(--poster-drift-y),
+        0
+      )
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+/* --- BIGGER SIDE POSTERS --- */
+
+.sidePoster {
+  width: 210px !important;
+  height: 156px !important;
+}
+
+.sidePosterCard {
+  width: 210px !important;
+  height: 156px !important;
+}
+
+.sidePosterCard img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 22% !important;
+  transform: scale(1.35) !important;
+  transform-origin: center 22% !important;
+}
+
+/* --- VERTICAL SIDE POSTERS --- */
+
+.sidePoster {
+  width: 165px !important;
+  height: 235px !important;
+}
+
+.sidePosterCard {
+  width: 165px !important;
+  height: 235px !important;
+}
+
+.sidePosterCard img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  transform: scale(1.12) !important;
+  transform-origin: center top !important;
+}
+
+/* --- SHORTER FULLY OPEN POSTER HOLD --- */
+
+.sidePoster {
+  animation: sidePosterShortHold 2.35s cubic-bezier(.16, 1, .3, 1) forwards !important;
+}
+
+@keyframes sidePosterShortHold {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(
+        calc(var(--poster-drift-x) * -1),
+        calc(var(--poster-drift-y) * -1),
+        0
+      )
+      rotate(calc(var(--poster-rotate) - 4deg))
+      scale(.16);
+  }
+
+  38% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  62% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(
+        var(--poster-drift-x),
+        var(--poster-drift-y),
+        0
+      )
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+/* --- VERY SHORT STATIC HOLD FOR SIDE POSTERS --- */
+
+.sidePoster {
+  animation: sidePosterVeryShortHold 2.15s cubic-bezier(.16, 1, .3, 1) forwards !important;
+}
+
+@keyframes sidePosterVeryShortHold {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(
+        calc(var(--poster-drift-x) * -1),
+        calc(var(--poster-drift-y) * -1),
+        0
+      )
+      rotate(calc(var(--poster-rotate) - 4deg))
+      scale(.16);
+  }
+
+  46% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  54% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(
+        var(--poster-drift-x),
+        var(--poster-drift-y),
+        0
+      )
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+/* --- LANDING / ENTRANCE EXPERIENCE --- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.scrollExperience {
+  width: 100%;
+  min-height: 200vh;
+  background: #e3e3e3;
+}
+
+.landingHero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.72), transparent 42%),
+    linear-gradient(180deg, #eeeeee 0%, #dddddd 100%);
+}
+
+.landingHero .newsBackdrop {
+  position: absolute !important;
+  z-index: 1 !important;
+}
+
+.landingHero .newsSheet {
+  opacity: .82 !important;
+}
+
+.landingContent {
+  position: relative;
+  z-index: 30;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 42px;
+  color: #000;
+  pointer-events: none;
+}
+
+.landingLogo {
+  justify-self: start;
+  display: grid;
+  gap: 3px;
+  padding: 13px 15px;
+  background: #ffd400;
+  border: 1px solid #000;
+  box-shadow: 5px 5px 0 rgba(0,0,0,.2);
+  font-family: var(--font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: -.02em;
+}
+
+.landingLogo span {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.landingLogo strong {
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.landingTitleBlock {
+  align-self: center;
+  justify-self: center;
+  width: min(960px, 90vw);
+  text-align: center;
+}
+
+.landingTitleBlock p {
+  margin: 0 0 18px;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.landingTitleBlock h1 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: clamp(58px, 8vw, 132px);
+  line-height: .86;
+  letter-spacing: -.075em;
+  font-weight: 900;
+}
+
+.landingScrollHint {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.landingScrollHint i {
+  display: block;
+  width: 74px;
+  height: 1px;
+  background: #000;
+}
+
+.appStage {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Quan arribes a l'app, ja no hi ha més scroll útil */
+.appStage .desktop {
+  min-height: 100vh !important;
+}
+
+/* --- HOME CURSOR POSTERS --- */
+
+.homePosterLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.homePoster {
+  position: fixed;
+  left: var(--poster-x);
+  top: var(--poster-y);
+  width: 165px;
+  height: 235px;
+  transform-origin: center center;
+  animation: homePosterSymmetricPop 2.15s cubic-bezier(.16, 1, .3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.homePosterCard {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #000;
+  box-shadow: 7px 7px 0 rgba(0,0,0,.18);
+}
+
+.homePosterCard img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transform: scale(1.12);
+  transform-origin: center top;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+@keyframes homePosterSymmetricPop {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(
+        calc(var(--poster-drift-x) * -1),
+        calc(var(--poster-drift-y) * -1),
+        0
+      )
+      rotate(calc(var(--poster-rotate) - 4deg))
+      scale(.16);
+  }
+
+  46% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  54% {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      rotate(var(--poster-rotate))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(
+        var(--poster-drift-x),
+        var(--poster-drift-y),
+        0
+      )
+      rotate(calc(var(--poster-rotate) + 4deg))
+      scale(.16);
+  }
+}
+
+@media (max-width: 900px) {
+  .landingContent {
+    padding: 24px;
+  }
+
+  .landingTitleBlock h1 {
+    font-size: clamp(48px, 16vw, 86px);
+  }
+
+  .homePosterLayer {
+    display: none;
+  }
+}
+
+/* --- LOCK INTRO AFTER ENTERING APP --- */
+
+body.intro-is-locked {
+  overflow-y: hidden !important;
+}
+
+.scrollExperience.introLocked {
+  min-height: 100vh !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.scrollExperience.introLocked .landingHero {
+  display: none !important;
+}
+
+.scrollExperience.introLocked .appStage {
+  min-height: 100vh !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.scrollExperience.introLocked .desktop {
+  min-height: 100vh !important;
+}
+
+/* --- LANDING CAPITALITAT LOGO --- */
+
+.landingLogoImage {
+  width: 260px;
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 18px;
+  background: #ffd400;
+  border: 1px solid #000;
+  box-shadow: 5px 5px 0 rgba(0,0,0,.2);
+}
+
+.landingLogoImage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 72px;
+  object-fit: contain;
+}
+
+@media (max-width: 800px) {
+  .landingLogoImage {
+    width: 210px;
+  }
+}
+
+/* --- LANDING CAPITALITAT PNG LOGO --- */
+
+.landingLogoImage {
+  width: 280px !important;
+  min-height: 96px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px 20px !important;
+  background: #ffd400 !important;
+  border: 1px solid #000 !important;
+  box-shadow: 5px 5px 0 rgba(0,0,0,.22) !important;
+}
+
+.landingLogoImage img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 82px !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 800px) {
+  .landingLogoImage {
+    width: 220px !important;
+    min-height: 78px !important;
+    padding: 14px 16px !important;
+  }
+
+  .landingLogoImage img {
+    max-height: 64px !important;
+  }
+}
+
+/* --- CAPITALITAT LOGO 200% BIGGER --- */
+
+.landingLogoImage {
+  width: 560px !important;
+  min-height: 190px !important;
+  padding: 32px 38px !important;
+}
+
+.landingLogoImage img {
+  max-height: 165px !important;
+}
+
+@media (max-width: 900px) {
+  .landingLogoImage {
+    width: 360px !important;
+    min-height: 130px !important;
+    padding: 22px 26px !important;
+  }
+
+  .landingLogoImage img {
+    max-height: 110px !important;
+  }
+}
+
+/* --- CAPITALITAT LOGO: ORIGINAL BOX + BIGGER CENTERED PNG --- */
+
+.landingLogoImage {
+  width: 280px !important;
+  min-height: 96px !important;
+  padding: 18px 20px !important;
+  background: #ffd400 !important;
+  border: 1px solid #000 !important;
+  box-shadow: 5px 5px 0 rgba(0,0,0,.22) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+.landingLogoImage img {
+  width: 200% !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform: translate(0, 0) scale(1) !important;
+  transform-origin: center center !important;
+}
+
+@media (max-width: 800px) {
+  .landingLogoImage {
+    width: 220px !important;
+    min-height: 78px !important;
+    padding: 14px 16px !important;
+  }
+
+  .landingLogoImage img {
+    width: 200% !important;
+  }
+}
+
+/* --- CAPITALITAT LOGO BOX: SMALLER + HIGHER + CENTERED LOGO --- */
+
+.landingLogoImage {
+  width: 140px !important;
+  min-height: 48px !important;
+  padding: 9px 10px !important;
+  margin-top: -26px !important;
+
+  background: #ffd400 !important;
+  border: 1px solid #000 !important;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.22) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: visible !important;
+}
+
+.landingLogoImage img {
+  width: 200% !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: none !important;
+
+  display: block !important;
+  object-fit: contain !important;
+
+  transform: translate(0, 0) !important;
+  transform-origin: center center !important;
+}
+
+@media (max-width: 800px) {
+  .landingLogoImage {
+    width: 120px !important;
+    min-height: 42px !important;
+    padding: 8px 9px !important;
+    margin-top: -16px !important;
+  }
+
+  .landingLogoImage img {
+    width: 190% !important;
+  }
+}
+
+/* --- LANDING FINAL POSITION: CENTER TITLE + CLEAN BIG LOGO --- */
+
+/* El contingut de la home passa a funcionar per posicions absolutes */
+.landingContent {
+  position: relative !important;
+  display: block !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+/* Logo net, sense caixa groga */
+.landingLogoImage {
+  position: absolute !important;
+  top: 28px !important;
+  left: 32px !important;
+
+  width: 280px !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: visible !important;
+  z-index: 40 !important;
+}
+
+/* PNG del logo 100% més gran respecte al que es veia ara */
+.landingLogoImage img {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform: none !important;
+  transform-origin: center center !important;
+}
+
+/* Títol més centrat en el centre real de la pantalla */
+.landingTitleBlock {
+  position: absolute !important;
+  top: 52% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(980px, 88vw) !important;
+  text-align: center !important;
+  z-index: 35 !important;
+}
+
+/* Scroll hint fixat baix i centrat */
+.landingScrollHint {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 36px !important;
+  transform: translateX(-50%) !important;
+  z-index: 35 !important;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .landingLogoImage {
+    top: 22px !important;
+    left: 22px !important;
+    width: 210px !important;
+  }
+
+  .landingTitleBlock {
+    top: 53% !important;
+    width: 92vw !important;
+  }
+}
+
+/* --- COMPACT REVIEW MODE: MORE ROOM FOR EDITABLE FIELDS --- */
+
+/* La pantalla de revisió ha de cabre millor dins la finestra */
+.content:has(.reviewStudio),
+.content:has(.reviewHeader),
+.content:has(.documentFrame) {
+  height: calc(100vh - 96px) !important;
+  overflow: hidden !important;
+}
+
+/* Fem la columna central més compacta */
+.reviewStudio,
+.reviewMain,
+.reviewWork,
+.reviewDocument {
+  min-height: 0 !important;
+}
+
+/* Capçalera de la revisió més baixa */
+.reviewHeader,
+.reviewHero,
+.reviewTitleBlock {
+  padding-top: 14px !important;
+  padding-bottom: 12px !important;
+}
+
+.reviewHeader h1,
+.reviewHero h1,
+.reviewTitleBlock h1 {
+  font-size: clamp(34px, 3.4vw, 54px) !important;
+  line-height: .92 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Barra de metadades més fina */
+.reviewToolbar,
+.documentToolbar,
+.reviewMetaBar {
+  min-height: 42px !important;
+}
+
+/* La imatge del PDF deixa de menjar-se tota la pantalla */
+.documentFrame,
+.reviewDocumentFrame,
+.reviewPageFrame,
+.previewFrame {
+  height: 255px !important;
+  max-height: 255px !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+/* Imatge dins el visor: més continguda */
+.documentFrame img,
+.reviewDocumentFrame img,
+.reviewPageFrame img,
+.previewFrame img {
+  max-height: 240px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+}
+
+/* Si el visor usa iframe/canvas també el limitem */
+.documentFrame iframe,
+.documentFrame canvas,
+.reviewDocumentFrame iframe,
+.reviewDocumentFrame canvas,
+.reviewPageFrame iframe,
+.reviewPageFrame canvas {
+  max-height: 240px !important;
+}
+
+/* Text extret / resum automàtic més petit */
+.reviewExtract,
+.extractBox,
+.summaryBox,
+.detailsText,
+.documentSummary,
+.reviewSummary {
+  max-height: 78px !important;
+  overflow: auto !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+/* Si el resum està dins un details, que sigui molt compacte */
+details.reviewExtract,
+details.extractBox,
+details.summaryBox {
+  max-height: 96px !important;
+}
+
+/* Panell d'edició més visible */
+.reviewInspector,
+.inspectorPanel,
+.detectedPanel,
+.editPanel {
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+/* Inputs més compactes perquè càpiguen 01 i 02 */
+.reviewInspector input,
+.reviewInspector select,
+.reviewInspector textarea,
+.inspectorPanel input,
+.inspectorPanel select,
+.inspectorPanel textarea,
+.editPanel input,
+.editPanel select,
+.editPanel textarea {
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
+
+/* Textarea de notes menys alta */
+.reviewInspector textarea,
+.inspectorPanel textarea,
+.editPanel textarea {
+  min-height: 58px !important;
+  max-height: 90px !important;
+}
+
+/* Separació vertical menor entre camps */
+.reviewInspector label,
+.inspectorPanel label,
+.editPanel label {
+  margin-bottom: 4px !important;
+}
+
+.reviewInspector > *,
+.inspectorPanel > *,
+.editPanel > * {
+  gap: 8px !important;
+}
+
+/* Botonera inferior més baixa */
+.reviewActions,
+.actionBar {
+  min-height: 54px !important;
+}
+
+.reviewActions button,
+.actionBar button {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+/* --- REVIEW: DOCUMENT + EDIT PANEL 50 / 50 --- */
+
+/* La zona central de revisió es divideix en dues meitats */
+.reviewWork,
+.reviewWorkspace,
+.reviewEditor,
+.reviewMainGrid,
+.reviewBody,
+.reviewDetailGrid {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+/* Si la zona central està dins reviewStudio amb grid intern */
+.reviewStudio .reviewWork,
+.reviewStudio .reviewWorkspace,
+.reviewStudio .reviewEditor,
+.reviewStudio .reviewMainGrid,
+.reviewStudio .reviewBody,
+.reviewStudio .reviewDetailGrid {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+/* Columna esquerra: PDF / imatge */
+.reviewDocument,
+.reviewDocumentPanel,
+.documentPanel,
+.reviewPreview,
+.documentPreview {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+/* Columna dreta: dades detectades / camps editables */
+.reviewInspector,
+.inspectorPanel,
+.detectedPanel,
+.editPanel,
+.reviewEditPanel {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+/* Evitem que el visor PDF empenti la columna editable */
+.documentFrame,
+.reviewDocumentFrame,
+.reviewPageFrame,
+.previewFrame {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Imatge més continguda dins la seva meitat */
+.documentFrame img,
+.reviewDocumentFrame img,
+.reviewPageFrame img,
+.previewFrame img {
+  max-width: 100% !important;
+  width: auto !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* El panell editable ha de poder respirar */
+.reviewInspector section,
+.inspectorPanel section,
+.detectedPanel section,
+.editPanel section {
+  width: 100% !important;
+}
+
+/* En pantalles petites tornem a una columna */
+@media (max-width: 1050px) {
+  .reviewWork,
+  .reviewWorkspace,
+  .reviewEditor,
+  .reviewMainGrid,
+  .reviewBody,
+  .reviewDetailGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* --- REVIEW: ALWAYS VISIBLE VALIDATION BUTTONS --- */
+
+/* La zona de revisió ha de reservar espai per la botonera inferior */
+.content:has(.reviewStudio),
+.content:has(.reviewHeader),
+.content:has(.documentFrame) {
+  position: relative !important;
+}
+
+/* Evitem que els panels tapin la botonera */
+.reviewStudio,
+.reviewWork,
+.reviewWorkspace,
+.reviewEditor,
+.reviewMainGrid,
+.reviewBody,
+.reviewDetailGrid {
+  padding-bottom: 72px !important;
+}
+
+/* Botonera sempre visible a baix */
+.reviewActions,
+.actionBar,
+.reviewActionBar {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 80 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+
+  width: 100% !important;
+  min-height: 58px !important;
+
+  background: #fff !important;
+  border-top: 1px solid #000 !important;
+  box-shadow: 0 -8px 18px rgba(0,0,0,.08) !important;
+}
+
+/* Botons visibles i compactes */
+.reviewActions button,
+.actionBar button,
+.reviewActionBar button {
+  min-height: 58px !important;
+  padding: 0 14px !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 1px solid #000 !important;
+
+  background: #fff !important;
+  color: #000 !important;
+
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+/* El botó principal continua groc */
+.reviewActions button:last-child,
+.actionBar button:last-child,
+.reviewActionBar button:last-child {
+  background: #ffd400 !important;
+  border-right: 0 !important;
+}
+
+/* Si algun panel intern fa scroll, que no amagui el final */
+.reviewInspector,
+.inspectorPanel,
+.detectedPanel,
+.editPanel,
+.reviewDocument,
+.documentPanel,
+.reviewPreview,
+.documentPreview {
+  padding-bottom: 80px !important;
+}
+
+/* La finestra principal no ha de tallar la botonera */
+.main,
+.center,
+.reviewMain {
+  overflow: visible !important;
+}
+
+/* --- REVIEW: FIX SIDE COLUMNS SCROLL TO THE END --- */
+
+/* La pantalla de revisió no ha de tallar les columnes laterals */
+.content:has(.reviewStudio) {
+  height: calc(100vh - 92px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Columna esquerra: Impactes detectats */
+/* Columna dreta: Fitxa detectada */
+.content:has(.reviewStudio) .left,
+.content:has(.reviewStudio) .right {
+  height: calc(100vh - 92px) !important;
+  max-height: calc(100vh - 92px) !important;
+  min-height: 0 !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  padding-bottom: 140px !important;
+  box-sizing: border-box !important;
+
+  scrollbar-gutter: stable !important;
+  overscroll-behavior: contain !important;
+}
+
+/* Si hi ha contenidors interns dins la columna esquerra/dreta, també els deixem respirar */
+.content:has(.reviewStudio) .left > *,
+.content:has(.reviewStudio) .right > * {
+  min-height: 0 !important;
+}
+
+/* El final de les llistes i fitxes no ha de quedar enganxat a baix */
+.content:has(.reviewStudio) .left::after,
+.content:has(.reviewStudio) .right::after {
+  content: "";
+  display: block;
+  height: 110px;
+}
+
+/* La columna central també ha de respectar la botonera */
+.content:has(.reviewStudio) .main {
+  height: calc(100vh - 92px) !important;
+  max-height: calc(100vh - 92px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding-bottom: 70px !important;
+  box-sizing: border-box !important;
+}
+
+/* La botonera queda per sobre, però no tapa el final dels scrolls */
+.reviewActions,
+.actionBar,
+.reviewActionBar {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 120 !important;
+}
+
+/* En mode revisió, evitem que algun overflow anterior bloquegi el scroll lateral */
+body.intro-is-locked .content:has(.reviewStudio) .left,
+body.intro-is-locked .content:has(.reviewStudio) .right {
+  overflow-y: auto !important;
+}
+
+/* --- REVIEW: NARROWER SIDE COLUMNS / WIDER CENTRAL AREA --- */
+
+/* Abans les columnes laterals ocupaven massa.
+   Ara: esquerra i dreta aproximadament un 15% més estretes. */
+.content:has(.reviewStudio) {
+  grid-template-columns: 300px minmax(0, 1fr) 340px !important;
+}
+
+/* Assegurem que les columnes laterals respecten aquesta mida */
+.content:has(.reviewStudio) .left {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 0 !important;
+}
+
+.content:has(.reviewStudio) .right {
+  width: 340px !important;
+  max-width: 340px !important;
+  min-width: 0 !important;
+}
+
+/* La zona central aprofita tot l'espai guanyat */
+.content:has(.reviewStudio) .main {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+/* Dins la zona central mantenim el 50/50 que volies */
+.content:has(.reviewStudio) .reviewWork,
+.content:has(.reviewStudio) .reviewWorkspace,
+.content:has(.reviewStudio) .reviewEditor,
+.content:has(.reviewStudio) .reviewMainGrid,
+.content:has(.reviewStudio) .reviewBody,
+.content:has(.reviewStudio) .reviewDetailGrid {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+/* En pantalles més petites reduïm una mica més les laterals */
+@media (max-width: 1350px) {
+  .content:has(.reviewStudio) {
+    grid-template-columns: 280px minmax(0, 1fr) 320px !important;
+  }
+
+  .content:has(.reviewStudio) .left {
+    width: 280px !important;
+    max-width: 280px !important;
+  }
+
+  .content:has(.reviewStudio) .right {
+    width: 320px !important;
+    max-width: 320px !important;
+  }
+}
+
+/* --- REVIEW DOCUMENT HEADER + FULL WIDTH PDF IMAGE --- */
+
+/* La fila superior del document ha de tenir totes les cel·les igual d'altes */
+.reviewDocument header,
+.reviewDocumentHeader,
+.documentHeader,
+.documentToolbar,
+.reviewToolbar {
+  align-items: stretch !important;
+}
+
+/* Totes les peces de la fila: mitjà, obrir URL i saltar */
+.reviewDocument header > *,
+.reviewDocumentHeader > *,
+.documentHeader > *,
+.documentToolbar > *,
+.reviewToolbar > * {
+  height: auto !important;
+  min-height: 58px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* El bloc del mitjà/data ha d'omplir tota l'alçada */
+.reviewDocument header > *:first-child,
+.reviewDocumentHeader > *:first-child,
+.documentHeader > *:first-child,
+.documentToolbar > *:first-child,
+.reviewToolbar > *:first-child {
+  align-self: stretch !important;
+  height: auto !important;
+  min-height: 58px !important;
+  background: #fff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+/* Elimina el requadre gris gran del visor */
+.documentFrame,
+.reviewDocumentFrame,
+.reviewPageFrame,
+.previewFrame {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #000 !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* La imatge ha d'ocupar tot l'ample del visor */
+.documentFrame img,
+.reviewDocumentFrame img,
+.reviewPageFrame img,
+.previewFrame img {
+  display: block !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+
+  height: auto !important;
+  max-height: none !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  background: #fff !important;
+  border: 0 !important;
+}
+
+/* Si abans hi havia un contenidor interior gris, també el netegem */
+.documentFrame > div,
+.reviewDocumentFrame > div,
+.reviewPageFrame > div,
+.previewFrame > div {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* El canvas/iframe també ha d'omplir l'ample si algun PDF es renderitza així */
+.documentFrame canvas,
+.documentFrame iframe,
+.reviewDocumentFrame canvas,
+.reviewDocumentFrame iframe,
+.reviewPageFrame canvas,
+.reviewPageFrame iframe,
+.previewFrame canvas,
+.previewFrame iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  display: block !important;
+  margin: 0 !important;
+  background: #fff !important;
+}
+
+/* --- REVIEW FINAL LAYOUT: NO INNER PDF SCROLLER + COMPACT ACTION BAR --- */
+
+/* La columna central és qui fa scroll, no el visor de la imatge */
+.content:has(.reviewStudio) .main {
+  height: calc(100vh - 92px) !important;
+  max-height: calc(100vh - 92px) !important;
+  min-height: 0 !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  padding-bottom: 0 !important;
+  background: #fff !important;
+}
+
+/* Eliminem espais grisos artificials creats pels padding-bottom anteriors */
+.reviewStudio,
+.reviewWork,
+.reviewWorkspace,
+.reviewEditor,
+.reviewMainGrid,
+.reviewBody,
+.reviewDetailGrid {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  background: #fff !important;
+}
+
+/* El visor del PDF ja no és una caixa amb scroll propi */
+.documentFrame,
+.reviewDocumentFrame,
+.reviewPageFrame,
+.previewFrame {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+
+  overflow: visible !important;
+
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 1px solid #000 !important;
+  border-top: 0 !important;
+}
+
+/* Eliminem qualsevol contenidor gris interior */
+.documentFrame > *,
+.reviewDocumentFrame > *,
+.reviewPageFrame > *,
+.previewFrame > * {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* La imatge ocupa tot l'ample i baixa tant com necessiti */
+.documentFrame img,
+.reviewDocumentFrame img,
+.reviewPageFrame img,
+.previewFrame img {
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: auto !important;
+  max-height: none !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  background: #fff !important;
+  border: 0 !important;
+}
+
+/* Si el PDF apareix com canvas o iframe, també ocupa l'ample sense caixa interna */
+.documentFrame canvas,
+.documentFrame iframe,
+.reviewDocumentFrame canvas,
+.reviewDocumentFrame iframe,
+.reviewPageFrame canvas,
+.reviewPageFrame iframe,
+.previewFrame canvas,
+.previewFrame iframe {
+  display: block !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  height: auto !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  background: #fff !important;
+  border: 0 !important;
+}
+
+/* La part del document no deixa una franja grisa abans dels botons */
+.reviewDocument,
+.reviewDocumentPanel,
+.documentPanel,
+.reviewPreview,
+.documentPreview {
+  background: #fff !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Botonera inferior més estreta d'alçada */
+.reviewActions,
+.actionBar,
+.reviewActionBar {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 150 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+
+  width: 100% !important;
+  min-height: 44px !important;
+  height: 44px !important;
+
+  margin-top: 0 !important;
+
+  background: #fff !important;
+  border-top: 1px solid #000 !important;
+  box-shadow: none !important;
+}
+
+/* Botons més baixos */
+.reviewActions button,
+.actionBar button,
+.reviewActionBar button {
+  min-height: 44px !important;
+  height: 44px !important;
+
+  padding: 0 10px !important;
+  line-height: 1 !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 1px solid #000 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+/* El botó principal groc continua igual però més compacte */
+.reviewActions button:last-child,
+.actionBar button:last-child,
+.reviewActionBar button:last-child {
+  background: #ffd400 !important;
+  border-right: 0 !important;
+}
+
+/* Eliminem franja grisa de sota la botonera */
+.content:has(.reviewStudio) .main::after,
+.reviewStudio::after,
+.reviewWork::after,
+.reviewBody::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Columnes laterals continuen amb scroll propi fins al final */
+.content:has(.reviewStudio) .left,
+.content:has(.reviewStudio) .right {
+  overflow-y: auto !important;
+  padding-bottom: 90px !important;
+}
+
+/* --- REVIEW: FIXED ACTION BAR ALWAYS VISIBLE --- */
+
+/* La columna central de revisió necessita espai inferior perquè la botonera no tapi contingut */
+.content:has(.reviewStudio) .main {
+  position: relative !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 58px !important;
+}
+
+/* La botonera queda fixa al viewport, però alineada amb la columna central */
+.content:has(.reviewStudio) .reviewActions,
+.content:has(.reviewStudio) .actionBar,
+.content:has(.reviewStudio) .reviewActionBar {
+  position: fixed !important;
+
+  /* baix de la finestra del navegador/app */
+  bottom: 44px !important;
+
+  /* alineació aproximada amb la columna central:
+     marge esquerre finestra + columna impactes */
+  left: calc(50vw - 680px + 300px) !important;
+
+  /* marge dret finestra + columna fitxa */
+  right: calc(50vw - 680px + 340px) !important;
+
+  z-index: 9999 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+
+  height: 44px !important;
+  min-height: 44px !important;
+
+  background: #fff !important;
+  border-top: 1px solid #000 !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  box-shadow: 0 -6px 14px rgba(0,0,0,.12) !important;
+}
+
+/* Botons compactes */
+.content:has(.reviewStudio) .reviewActions button,
+.content:has(.reviewStudio) .actionBar button,
+.content:has(.reviewStudio) .reviewActionBar button {
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 10px !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 1px solid #000 !important;
+
+  background: #fff !important;
+  color: #000 !important;
+
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+/* Últim botó groc */
+.content:has(.reviewStudio) .reviewActions button:last-child,
+.content:has(.reviewStudio) .actionBar button:last-child,
+.content:has(.reviewStudio) .reviewActionBar button:last-child {
+  background: #ffd400 !important;
+  border-right: 0 !important;
+}
+
+/* En pantalles una mica més petites ajustem les columnes */
+@media (max-width: 1350px) {
+  .content:has(.reviewStudio) .reviewActions,
+  .content:has(.reviewStudio) .actionBar,
+  .content:has(.reviewStudio) .reviewActionBar {
+    left: calc(50vw - 640px + 280px) !important;
+    right: calc(50vw - 640px + 320px) !important;
+  }
+}
+
+/* En pantalles estretes, que ocupi gairebé tot l'ample */
+@media (max-width: 1100px) {
+  .content:has(.reviewStudio) .reviewActions,
+  .content:has(.reviewStudio) .actionBar,
+  .content:has(.reviewStudio) .reviewActionBar {
+    left: 24px !important;
+    right: 24px !important;
+    bottom: 24px !important;
+  }
+}
+
+/* --- REVIEW ACTION BAR: INSIDE CENTRAL COLUMN ONLY --- */
+
+/* La columna central és el contenidor real de la botonera */
+.content:has(.reviewStudio) .main {
+  position: relative !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 44px !important;
+}
+
+/* Anul·lem el fixed anterior que feia que sortís disparada */
+.content:has(.reviewStudio) .reviewActions,
+.content:has(.reviewStudio) .actionBar,
+.content:has(.reviewStudio) .reviewActionBar {
+  position: sticky !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: 0 !important;
+
+  z-index: 300 !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  height: 44px !important;
+  min-height: 44px !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+
+  margin: 0 !important;
+
+  background: #fff !important;
+  border-top: 1px solid #000 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Botons compactes i alineats */
+.content:has(.reviewStudio) .reviewActions button,
+.content:has(.reviewStudio) .actionBar button,
+.content:has(.reviewStudio) .reviewActionBar button {
+  height: 44px !important;
+  min-height: 44px !important;
+
+  padding: 0 10px !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 1px solid #000 !important;
+
+  background: #fff !important;
+  color: #000 !important;
+
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+/* Últim botó groc */
+.content:has(.reviewStudio) .reviewActions button:last-child,
+.content:has(.reviewStudio) .actionBar button:last-child,
+.content:has(.reviewStudio) .reviewActionBar button:last-child {
+  background: #ffd400 !important;
+  border-right: 0 !important;
+}
+
+/* Evitem que la botonera surti per sobre de les columnes laterals */
+.content:has(.reviewStudio) .left,
+.content:has(.reviewStudio) .right {
+  z-index: 20 !important;
+}
+
+.content:has(.reviewStudio) .main {
+  z-index: 30 !important;
+}
+
+/* --- REVIEW ACTION BAR: EXACTLY FIXED TO CENTRAL COLUMN --- */
+
+.content:has(.reviewStudio) .main {
+  position: relative !important;
+  padding-bottom: 64px !important;
+}
+
+/* Aquesta és la regla definitiva: fixa, però amb amplada exacta de la columna central */
+.content:has(.reviewStudio) .reviewActions,
+.content:has(.reviewStudio) .actionBar,
+.content:has(.reviewStudio) .reviewActionBar {
+  position: fixed !important;
+
+  left: var(--review-action-left) !important;
+  width: var(--review-action-width) !important;
+  right: auto !important;
+  bottom: var(--review-action-bottom) !important;
+
+  z-index: 99999 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+
+  height: 46px !important;
+  min-height: 46px !important;
+
+  margin: 0 !important;
+
+  background: #fff !important;
+  border-top: 1px solid #000 !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  box-shadow: 0 -4px 10px rgba(0,0,0,.08) !important;
+}
+
+/* Botons compactes */
+.content:has(.reviewStudio) .reviewActions button,
+.content:has(.reviewStudio) .actionBar button,
+.content:has(.reviewStudio) .reviewActionBar button {
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 10px !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 1px solid #000 !important;
+
+  background: #fff !important;
+  color: #000 !important;
+
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+/* Últim botó groc */
+.content:has(.reviewStudio) .reviewActions button:last-child,
+.content:has(.reviewStudio) .actionBar button:last-child,
+.content:has(.reviewStudio) .reviewActionBar button:last-child {
+  background: #ffd400 !important;
+  border-right: 0 !important;
+}
+
+/* Donem aire al final perquè el contingut no quedi tapat per la botonera */
+.reviewStudio,
+.reviewWork,
+.reviewWorkspace,
+.reviewEditor,
+.reviewMainGrid,
+.reviewBody,
+.reviewDetailGrid {
+  padding-bottom: 62px !important;
+}
+
+/* --- REVIEW: REMOVE EMPTY WHITE GAP ABOVE ACTION BAR --- */
+
+/* Eliminem tots els espais extra que havíem afegit a la zona central */
+.content:has(.reviewStudio) .main,
+.content:has(.reviewStudio) .reviewStudio,
+.content:has(.reviewStudio) .reviewWork,
+.content:has(.reviewStudio) .reviewWorkspace,
+.content:has(.reviewStudio) .reviewEditor,
+.content:has(.reviewStudio) .reviewMainGrid,
+.content:has(.reviewStudio) .reviewBody,
+.content:has(.reviewStudio) .reviewDetailGrid {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* La columna central continua fent scroll, però sense crear una franja buida */
+.content:has(.reviewStudio) .main {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background: #fff !important;
+}
+
+/* Reservem només un espai mínim real, equivalent a la botonera */
+.content:has(.reviewStudio) .reviewStudio {
+  padding-bottom: 48px !important;
+}
+
+/* Si algun pseudo-element estava generant espai, l'eliminem */
+.content:has(.reviewStudio) .main::after,
+.content:has(.reviewStudio) .reviewStudio::after,
+.content:has(.reviewStudio) .reviewWork::after,
+.content:has(.reviewStudio) .reviewBody::after,
+.content:has(.reviewStudio) .reviewDetailGrid::after {
+  display: none !important;
+  content: none !important;
+  height: 0 !important;
+}
+
+/* La botonera es manté fixa a baix i no genera espai visual dins el contingut */
+.content:has(.reviewStudio) .reviewActions,
+.content:has(.reviewStudio) .actionBar,
+.content:has(.reviewStudio) .reviewActionBar {
+  margin-top: 0 !important;
+}

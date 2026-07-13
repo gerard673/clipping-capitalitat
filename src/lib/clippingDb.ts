@@ -5,6 +5,7 @@ type AnyImpact = Record<string, any>;
 function dbToImpact(row: any): AnyImpact {
   return {
     id: row.id,
+    recullId: row.recull_id,
     recull: row.press_reculls?.title ?? "Recull importat",
     pdfPageStart: row.pdf_page_start,
     pdfPageEnd: row.pdf_page_end ?? undefined,
@@ -889,8 +890,9 @@ export async function importDetectedPdfPagesV3ToSupabase(
   return fetchImpactsFromSupabase();
 }
 
+
 export async function fetchRecullsFromSupabase() {
-  const { data, error } = await supabase
+  const { data: reculls, error: recullsError } = await supabase
     .from("press_reculls")
     .select(`
       id,
@@ -900,14 +902,26 @@ export async function fetchRecullsFromSupabase() {
       pdf_file_url,
       total_pages,
       status,
-      created_at,
-      press_impacts(id)
+      created_at
     `)
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (recullsError) throw recullsError;
 
-  return (data ?? []).map((recull: any) => ({
+  const { data: impacts, error: impactsError } = await supabase
+    .from("press_impacts")
+    .select("recull_id");
+
+  if (impactsError) throw impactsError;
+
+  const counts = new Map<string, number>();
+
+  for (const impact of impacts ?? []) {
+    if (!impact.recull_id) continue;
+    counts.set(impact.recull_id, (counts.get(impact.recull_id) ?? 0) + 1);
+  }
+
+  return (reculls ?? []).map((recull: any) => ({
     id: recull.id,
     title: recull.title,
     periodStart: recull.period_start,
@@ -916,7 +930,7 @@ export async function fetchRecullsFromSupabase() {
     totalPages: recull.total_pages,
     status: recull.status,
     createdAt: recull.created_at,
-    impactCount: recull.press_impacts?.length ?? 0,
+    impactCount: counts.get(recull.id) ?? 0,
   }));
 }
 
@@ -937,3 +951,4 @@ export async function updateRecullAfterProcessing(
 
   if (error) throw error;
 }
+

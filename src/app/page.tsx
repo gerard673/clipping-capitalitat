@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase, importDetectedPdfPagesV3ToSupabase, fetchRecullsFromSupabase, updateRecullAfterProcessing } from "@/lib/clippingDb";
 import { renderAndUploadPdfPages } from "@/lib/pdfPages";
 
@@ -20,8 +20,21 @@ type PressRecull = {
   impactCount: number;
 };
 
+type PressRecull = {
+  id: string;
+  title: string;
+  periodStart?: string | null;
+  periodEnd?: string | null;
+  pdfFileUrl?: string | null;
+  totalPages?: number | null;
+  status?: string | null;
+  createdAt?: string | null;
+  impactCount: number;
+};
+
 type Impact = {
   id: string;
+  recullId?: string;
   recull: string;
   pdfPageStart: number;
   pdfPageEnd?: number;
@@ -246,6 +259,455 @@ function unique(values: string[]) {
   return Array.from(new Set(values.filter(Boolean))).sort();
 }
 
+
+
+
+function isBackdropCandidate(impact: Impact) {
+  const media = impact.mediaName?.toLowerCase() ?? "";
+  const title = impact.title?.toLowerCase() ?? "";
+
+  const isSystem =
+    media.includes("portada") ||
+    media.includes("separador") ||
+    title.includes("portada del recull") ||
+    title.includes("separador");
+
+  return !!impact.pageImage && !isSystem;
+}
+
+function NewspaperBackdrop({
+  impacts,
+  selectedImageIds,
+}: {
+  impacts: Impact[];
+  selectedImageIds: string[];
+}) {
+  const selectedSet = new Set(selectedImageIds);
+  const hasRealCandidates = impacts.some(isBackdropCandidate);
+
+  const realSheets = Array.from(
+    new Map(
+      impacts
+        .filter((impact) => isBackdropCandidate(impact) && selectedSet.has(impact.id))
+        .map((impact) => [impact.pageImage, impact]),
+    ).values(),
+  ).slice(0, 28);
+
+  const placements = [
+    /* marge superior */
+    { top: "-2%", left: "2%", rotate: "-14deg", width: "176px" },
+    { top: "1%", left: "13%", rotate: "8deg", width: "163px" },
+    { top: "-3%", left: "26%", rotate: "-6deg", width: "182px" },
+    { top: "2%", left: "40%", rotate: "12deg", width: "158px" },
+    { top: "-2%", right: "36%", rotate: "-10deg", width: "178px" },
+    { top: "1%", right: "22%", rotate: "7deg", width: "165px" },
+    { top: "-3%", right: "10%", rotate: "-8deg", width: "180px" },
+    { top: "2%", right: "-1%", rotate: "13deg", width: "160px" },
+
+    /* marge esquerre */
+    { top: "15%", left: "-2%", rotate: "10deg", width: "178px" },
+    { top: "34%", left: "2%", rotate: "-9deg", width: "163px" },
+    { top: "54%", left: "-1%", rotate: "13deg", width: "185px" },
+    { top: "73%", left: "3%", rotate: "-7deg", width: "165px" },
+
+    /* marge dret */
+    { top: "14%", right: "-2%", rotate: "-11deg", width: "178px" },
+    { top: "33%", right: "2%", rotate: "8deg", width: "163px" },
+    { top: "53%", right: "-1%", rotate: "-14deg", width: "185px" },
+    { top: "72%", right: "3%", rotate: "7deg", width: "165px" },
+
+    /* marge inferior */
+    { bottom: "-2%", left: "2%", rotate: "9deg", width: "176px" },
+    { bottom: "2%", left: "15%", rotate: "-13deg", width: "160px" },
+    { bottom: "-1%", left: "30%", rotate: "6deg", width: "183px" },
+    { bottom: "2%", left: "46%", rotate: "-8deg", width: "165px" },
+    { bottom: "-1%", right: "32%", rotate: "7deg", width: "180px" },
+    { bottom: "2%", right: "17%", rotate: "-14deg", width: "160px" },
+    { bottom: "-2%", right: "3%", rotate: "9deg", width: "176px" },
+
+    /* cantonades */
+    { top: "8%", left: "7%", rotate: "-18deg", width: "152px" },
+    { top: "8%", right: "7%", rotate: "16deg", width: "152px" },
+    { bottom: "8%", left: "8%", rotate: "15deg", width: "154px" },
+    { bottom: "8%", right: "8%", rotate: "-16deg", width: "154px" },
+  ];
+
+  const fakeSheets = hasRealCandidates ? [] : placements.slice(0, 12);
+
+  return (
+    <div className="newsBackdrop" aria-hidden="true">
+      {realSheets.map((impact, index) => {
+        const placement = placements[index % placements.length];
+
+        return (
+          <div
+            key={`${impact.id}-${index}`}
+            className="newsSheet realNewsSheet"
+            style={{
+              top: placement.top,
+              left: placement.left,
+              right: placement.right,
+              bottom: placement.bottom,
+              width: placement.width,
+              transform: `rotate(${placement.rotate})`,
+              zIndex: 1 + (index % 5),
+            }}
+          >
+            <img src={impact.pageImage} alt="" />
+          </div>
+        );
+      })}
+
+      {fakeSheets.map((placement, index) => (
+        <div
+          key={index}
+          className="newsSheet fakeNewsSheet"
+          style={{
+            top: placement.top,
+            left: placement.left,
+            right: placement.right,
+            bottom: placement.bottom,
+            width: placement.width,
+            transform: `rotate(${placement.rotate})`,
+            zIndex: 1 + (index % 5),
+          }}
+        >
+          <div className="fakeMasthead">CLIPPING</div>
+          <div className="fakeHeadline" />
+          <div className="fakeColumns">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="fakePhoto" />
+          <div className="fakeLines">
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+
+
+
+
+function ColorMarginPreview({
+  impacts,
+  selectedImageIds,
+}: {
+  impacts: Impact[];
+  selectedImageIds: string[];
+}) {
+  const selectedSheets = impacts.filter(
+    (impact) => impact.pageImage && selectedImageIds.includes(impact.id),
+  );
+
+  const selectedSignature = selectedSheets.map((impact) => impact.id).join("|");
+
+  const [posters, setPosters] = useState<
+    {
+      id: number;
+      impactIndex: number;
+      x: number;
+      y: number;
+      rotate: number;
+      driftX: number;
+      driftY: number;
+    }[]
+  >([]);
+
+  const lastSpawnRef = useRef({ x: 0, y: 0, time: 0 });
+  const serialRef = useRef(0);
+
+  function pseudoRandom(seed: number) {
+    const value = Math.sin(seed * 92821.17) * 43758.5453;
+    return value - Math.floor(value);
+  }
+
+  useEffect(() => {
+    if (selectedSheets.length === 0) {
+      setPosters([]);
+      return;
+    }
+
+    function handleMouseMove(event: MouseEvent) {
+      const x = event.clientX;
+      const y = event.clientY;
+
+      const windowElement = document.querySelector(".window");
+      const rect = windowElement?.getBoundingClientRect();
+
+      if (
+        rect &&
+        x >= rect.left &&
+        x <= rect.right &&
+        y >= rect.top &&
+        y <= rect.bottom
+      ) {
+        setPosters([]);
+        return;
+      }
+
+      let side: "left" | "right" | null = null;
+
+      if (rect) {
+        if (x < rect.left) side = "left";
+        if (x > rect.right) side = "right";
+      } else {
+        if (x < 260) side = "left";
+        if (x > window.innerWidth - 260) side = "right";
+      }
+
+      if (!side) return;
+
+      const now = Date.now();
+      const last = lastSpawnRef.current;
+      const distance = Math.hypot(x - last.x, y - last.y);
+
+      if (now - last.time < 720 || distance < 155) return;
+
+      lastSpawnRef.current = { x, y, time: now };
+
+      const id = serialRef.current++;
+      const cardWidth = 165;
+      const cardHeight = 235;
+
+      const windowLeft = rect ? rect.left : 260;
+      const windowRight = rect ? rect.right : window.innerWidth - 260;
+
+      const jitterX = (pseudoRandom(id + 1) - 0.5) * 72;
+      const jitterY = (pseudoRandom(id + 2) - 0.5) * 82;
+
+      const rawX = x - cardWidth / 2 + jitterX;
+      const rawY = y - cardHeight / 2 + jitterY;
+
+      const marginX =
+        side === "left"
+          ? Math.min(rawX, windowLeft - cardWidth - 20)
+          : Math.max(rawX, windowRight + 20);
+
+      const safeX = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, marginX));
+      const safeY = Math.max(20, Math.min(window.innerHeight - cardHeight - 20, rawY));
+
+      const direction = side === "left" ? 1 : -1;
+
+      const newPoster = {
+        id,
+        x: safeX,
+        y: safeY,
+        impactIndex: (id + Math.floor(y / 140)) % selectedSheets.length,
+        rotate: (pseudoRandom(id + 3) - 0.5) * 18,
+        driftX: direction * (18 + pseudoRandom(id + 4) * 28),
+        driftY: -8 + pseudoRandom(id + 5) * 22,
+      };
+
+      setPosters((current) => [...current, newPoster].slice(-2));
+
+      window.setTimeout(() => {
+        setPosters((current) => current.filter((poster) => poster.id !== id));
+      }, 2200);
+    }
+
+    function handleMouseLeave() {
+      setPosters([]);
+    }
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [selectedSignature]);
+
+  if (selectedSheets.length === 0) return null;
+
+  return (
+    <div className="sidePosterLayer" aria-hidden="true">
+      {posters.map((poster) => {
+        const impact = selectedSheets[poster.impactIndex % selectedSheets.length];
+
+        return (
+          <div
+            key={poster.id}
+            className="sidePoster"
+            style={
+              {
+                "--poster-x": `${poster.x}px`,
+                "--poster-y": `${poster.y}px`,
+                "--poster-rotate": `${poster.rotate}deg`,
+                "--poster-drift-x": `${poster.driftX}px`,
+                "--poster-drift-y": `${poster.driftY}px`,
+              } as any
+            }
+          >
+            <div className="sidePosterCard">
+              <img src={impact.pageImage} alt="" />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+
+
+function HomePosterTrail({
+  impacts,
+  selectedImageIds,
+}: {
+  impacts: Impact[];
+  selectedImageIds: string[];
+}) {
+  const selectedSheets = impacts.filter(
+    (impact) => impact.pageImage && selectedImageIds.includes(impact.id),
+  );
+
+  const selectedSignature = selectedSheets.map((impact) => impact.id).join("|");
+
+  const [posters, setPosters] = useState<
+    {
+      id: number;
+      impactIndex: number;
+      x: number;
+      y: number;
+      rotate: number;
+      driftX: number;
+      driftY: number;
+    }[]
+  >([]);
+
+  const lastSpawnRef = useRef({ x: 0, y: 0, time: 0 });
+  const serialRef = useRef(0);
+
+  function pseudoRandom(seed: number) {
+    const value = Math.sin(seed * 92821.17) * 43758.5453;
+    return value - Math.floor(value);
+  }
+
+  useEffect(() => {
+    if (selectedSheets.length === 0) {
+      setPosters([]);
+      return;
+    }
+
+    const hero = document.querySelector(".landingHero");
+
+    function handleMouseMove(event: MouseEvent) {
+      const heroRect = hero?.getBoundingClientRect();
+
+      if (!heroRect) return;
+
+      const x = event.clientX;
+      const y = event.clientY;
+
+      const insideHero =
+        x >= heroRect.left &&
+        x <= heroRect.right &&
+        y >= heroRect.top &&
+        y <= heroRect.bottom;
+
+      if (!insideHero) return;
+
+      const now = Date.now();
+      const last = lastSpawnRef.current;
+      const distance = Math.hypot(x - last.x, y - last.y);
+
+      if (now - last.time < 416 || distance < 96) return;
+
+      lastSpawnRef.current = { x, y, time: now };
+
+      const id = serialRef.current++;
+      const cardWidth = 165;
+      const cardHeight = 235;
+
+      const jitterX = (pseudoRandom(id + 1) - 0.5) * 110;
+      const jitterY = (pseudoRandom(id + 2) - 0.5) * 110;
+
+      const safeX = Math.max(
+        24,
+        Math.min(window.innerWidth - cardWidth - 24, x - cardWidth / 2 + jitterX),
+      );
+
+      const safeY = Math.max(
+        24,
+        Math.min(window.innerHeight - cardHeight - 24, y - cardHeight / 2 + jitterY),
+      );
+
+      const newPoster = {
+        id,
+        x: safeX,
+        y: safeY,
+        impactIndex: (id + Math.floor(y / 140)) % selectedSheets.length,
+        rotate: (pseudoRandom(id + 3) - 0.5) * 20,
+        driftX: (pseudoRandom(id + 4) - 0.5) * 46,
+        driftY: (pseudoRandom(id + 5) - 0.5) * 38,
+      };
+
+      setPosters((current) => [...current, newPoster].slice(-5));
+
+      window.setTimeout(() => {
+        setPosters((current) => current.filter((poster) => poster.id !== id));
+      }, 2200);
+    }
+
+    function handleScroll() {
+      const heroRect = hero?.getBoundingClientRect();
+
+      if (!heroRect || heroRect.bottom < 0) {
+        setPosters([]);
+      }
+    }
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [selectedSignature]);
+
+  if (selectedSheets.length === 0) return null;
+
+  return (
+    <div className="homePosterLayer" aria-hidden="true">
+      {posters.map((poster) => {
+        const impact = selectedSheets[poster.impactIndex % selectedSheets.length];
+
+        return (
+          <div
+            key={poster.id}
+            className="homePoster"
+            style={
+              {
+                "--poster-x": `${poster.x}px`,
+                "--poster-y": `${poster.y}px`,
+                "--poster-rotate": `${poster.rotate}deg`,
+                "--poster-drift-x": `${poster.driftX}px`,
+                "--poster-drift-y": `${poster.driftY}px`,
+              } as any
+            }
+          >
+            <div className="homePosterCard">
+              <img src={impact.pageImage} alt="" />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+
 export default function Home() {
   const [view, setView] = useState<View>("reculls");
   const [impacts, setImpacts] = useState<Impact[]>([]);
@@ -253,6 +715,8 @@ export default function Home() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [reculls, setReculls] = useState<PressRecull[]>([]);
+  const [backdropImageIds, setBackdropImageIds] = useState<string[]>([]);
+  const [introLocked, setIntroLocked] = useState(false);
 
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -272,6 +736,8 @@ export default function Home() {
   const [archiveStatus, setArchiveStatus] = useState("");
   const [archiveCampaign, setArchiveCampaign] = useState("");
   const [archiveImportance, setArchiveImportance] = useState("");
+  const [archiveRecullId, setArchiveRecullId] = useState("");
+  const [archivePhotoFilter, setArchivePhotoFilter] = useState<"all" | "with" | "without">("all");
 
   const campaigns = unique(impacts.map((impact) => impact.campaign));
   const territories = unique(impacts.map((impact) => impact.territory));
@@ -320,15 +786,22 @@ export default function Home() {
           .toLowerCase()
           .includes(search);
 
+      const matchesPhoto =
+        archivePhotoFilter === "all" ||
+        (archivePhotoFilter === "with" && !!impact.pageImage) ||
+        (archivePhotoFilter === "without" && !impact.pageImage);
+
       return (
         matchesSearch &&
+        matchesPhoto &&
         (!archiveType || impact.mediaType === archiveType) &&
         (!archiveStatus || impact.status === archiveStatus) &&
         (!archiveCampaign || impact.campaign === archiveCampaign) &&
-        (!archiveImportance || impact.importance === archiveImportance)
+        (!archiveImportance || impact.importance === archiveImportance) &&
+        (!archiveRecullId || impact.recullId === archiveRecullId)
       );
     });
-  }, [impacts, archiveSearch, archiveType, archiveStatus, archiveCampaign, archiveImportance]);
+  }, [impacts, archiveSearch, archiveType, archiveStatus, archiveCampaign, archiveImportance, archiveRecullId, archivePhotoFilter]);
 
   const reviewQueue = useMemo(() => {
     return impacts.filter((impact) => impact.status !== "validat" && impact.status !== "arxivat");
@@ -376,10 +849,116 @@ export default function Home() {
         console.error("Error carregant reculls:", error);
       });
 
+    fetchRecullsFromSupabase()
+      .then((data) => {
+        if (cancelled) return;
+        setReculls(data as PressRecull[]);
+      })
+      .catch((error) => {
+        console.error("Error carregant reculls:", error);
+      });
+
     return () => {
       cancelled = true;
     };
   }, []);
+
+
+  useEffect(() => {
+    const candidateIds = impacts.filter(isBackdropCandidate).map((impact) => impact.id);
+
+    if (candidateIds.length === 0) return;
+
+    const saved = window.localStorage.getItem("clipping-backdrop-image-ids");
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as string[];
+        const validSaved = parsed.filter((id) => candidateIds.includes(id));
+
+        setBackdropImageIds(validSaved);
+        window.localStorage.setItem("clipping-backdrop-image-ids", JSON.stringify(validSaved));
+        return;
+      } catch {
+        // Si el localStorage està mal format, reiniciem la selecció.
+      }
+    }
+
+    setBackdropImageIds(candidateIds);
+    window.localStorage.setItem("clipping-backdrop-image-ids", JSON.stringify(candidateIds));
+  }, [impacts]);
+
+  function toggleBackdropImage(imageId: string) {
+    setBackdropImageIds((current) => {
+      const next = current.includes(imageId)
+        ? current.filter((id) => id !== imageId)
+        : [...current, imageId];
+
+      window.localStorage.setItem("clipping-backdrop-image-ids", JSON.stringify(next));
+      return next;
+    });
+  }
+
+
+  useEffect(() => {
+    function handleIntroScroll() {
+      if (introLocked) return;
+
+      const threshold = window.innerHeight * 0.62;
+
+      if (window.scrollY >= threshold) {
+        setIntroLocked(true);
+
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        });
+      }
+    }
+
+    window.addEventListener("scroll", handleIntroScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleIntroScroll);
+    };
+  }, [introLocked]);
+
+  useEffect(() => {
+    document.body.classList.toggle("intro-is-locked", introLocked);
+
+    if (introLocked) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+
+    return () => {
+      document.body.classList.remove("intro-is-locked");
+    };
+  }, [introLocked]);
+
+
+  useEffect(() => {
+    function updateReviewActionBarPosition() {
+      const reviewStudio = document.querySelector(".reviewStudio");
+      const mainColumn = reviewStudio?.closest(".main") as HTMLElement | null;
+
+      if (!mainColumn) return;
+
+      const rect = mainColumn.getBoundingClientRect();
+
+      document.documentElement.style.setProperty("--review-action-left", `${rect.left}px`);
+      document.documentElement.style.setProperty("--review-action-width", `${rect.width}px`);
+      document.documentElement.style.setProperty("--review-action-bottom", `${Math.max(0, window.innerHeight - rect.bottom)}px`);
+    }
+
+    updateReviewActionBarPosition();
+
+    window.addEventListener("resize", updateReviewActionBarPosition);
+    window.addEventListener("scroll", updateReviewActionBarPosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updateReviewActionBarPosition);
+      window.removeEventListener("scroll", updateReviewActionBarPosition, true);
+    };
+  }, [view]);
 
   async function simulatePdfImport() {
     try {
@@ -522,7 +1101,33 @@ export default function Home() {
   }
 
   return (
-    <div className="desktop">
+    <main className={introLocked ? "scrollExperience introLocked" : "scrollExperience"}>
+      <section className="landingHero">
+        <NewspaperBackdrop impacts={impacts} selectedImageIds={backdropImageIds} />
+        <HomePosterTrail impacts={impacts} selectedImageIds={backdropImageIds} />
+
+        <div className="landingContent">
+          <div className="landingLogo landingLogoImage">
+            <img src="/logo-capitalitat.png" alt="Barcelona Capital Mundial de l’Arquitectura 2026" />
+          </div>
+
+          <div className="landingTitleBlock">
+            <p>Recull de premsa / clipping</p>
+            <h1>Arxiu viu dels impactes mediàtics</h1>
+          </div>
+
+          <div className="landingScrollHint">
+            <span>Scroll</span>
+            <i />
+            <span>Entrar a l’eina</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="appStage">
+        <div className="desktop">
+          <NewspaperBackdrop impacts={impacts} selectedImageIds={backdropImageIds} />
+          <ColorMarginPreview impacts={impacts} selectedImageIds={backdropImageIds} />
       <div className="window">
         <div className="browser">
           <div className="dots"><span /><span /><span /></div>
@@ -981,6 +1586,30 @@ export default function Home() {
                     />
                   </div>
 
+                  <div>
+                    <label>Recull</label>
+                    <select value={archiveRecullId} onChange={(event) => setArchiveRecullId(event.target.value)}>
+                      <option value="">Tots els reculls</option>
+                      {reculls.map((recull) => (
+                        <option key={recull.id} value={recull.id}>
+                          {recull.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label>Foto</label>
+                    <select
+                      value={archivePhotoFilter}
+                      onChange={(event) => setArchivePhotoFilter(event.target.value as "all" | "with" | "without")}
+                    >
+                      <option value="all">Totes</option>
+                      <option value="with">Només amb foto</option>
+                      <option value="without">Només sense foto</option>
+                    </select>
+                  </div>
+
                   <Filter label="Tipus" value={archiveType} setValue={setArchiveType} options={["PENDENT", "PREMSA", "ONLINE"]} />
                   <Filter label="Estat" value={archiveStatus} setValue={setArchiveStatus} options={["pendent", "revisat", "validat", "arxivat"]} />
                   <Filter label="Campanya" value={archiveCampaign} setValue={setArchiveCampaign} options={campaigns} />
@@ -1110,10 +1739,27 @@ export default function Home() {
                         onClick={() => setSelectedId(impact.id)}
                       >
                         <div className="archiveCardImage">
+                          {impact.pageImage && (
+                            <label
+                              className="backdropCheckbox"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={backdropImageIds.includes(impact.id)}
+                                onChange={(event) => {
+                                  event.stopPropagation();
+                                  toggleBackdropImage(impact.id);
+                                }}
+                              />
+                              <span>Fons</span>
+                            </label>
+                          )}
+
                           {impact.pageImage ? (
                             <img src={impact.pageImage} alt={`Pàgina ${impact.pdfPageStart}`} />
                           ) : (
-                            <span>Sense captura</span>
+                            <span>Sense foto</span>
                           )}
                         </div>
 
@@ -1315,6 +1961,8 @@ export default function Home() {
         </div>
       </div>
     </div>
+      </section>
+    </main>
   );
 }
 
@@ -1514,6 +2162,6 @@ function ReportTypeBlock({ impacts }: { impacts: Impact[] }) {
           </div>
         );
       })}
-    </div>
+        </div>
   );
 }
