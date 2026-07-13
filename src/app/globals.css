@@ -5477,3 +5477,17 @@ body.intro-is-locked .content:has(.reviewStudio) .right {
 .content:has(.reviewStudio) .reviewActionBar {
   margin-top: 0 !important;
 }
+
+/* --- LANDING RED TEXT DETAILS --- */
+
+.landingTitleBlock p {
+  color: #e30613 !important;
+}
+
+.landingScrollHint {
+  color: #e30613 !important;
+}
+
+.landingScrollHint i {
+  background: #e30613 !important;
+}
