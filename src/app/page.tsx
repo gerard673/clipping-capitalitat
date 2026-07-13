@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase } from "@/lib/clippingDb";
+import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase } from "@/lib/clippingDb";
 
 type Status = "pendent" | "revisat" | "validat" | "arxivat";
 type MediaType = "PREMSA" | "ONLINE";
@@ -233,6 +233,8 @@ export default function Home() {
   const [view, setView] = useState<View>("reculls");
   const [impacts, setImpacts] = useState<Impact[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -360,6 +362,22 @@ export default function Home() {
     setSelectedId(next?.id ?? null);
   }
 
+  async function uploadRealPdf() {
+    if (!pdfFile) {
+      setUploadMessage("Selecciona primer un PDF.");
+      return;
+    }
+
+    try {
+      setUploadMessage("Pujant PDF a Supabase...");
+      const recull = await uploadPdfRecullToSupabase(pdfFile);
+      setUploadMessage(`PDF pujat correctament: ${recull.title}`);
+    } catch (error) {
+      console.error("Error pujant PDF:", error);
+      setUploadMessage("No s'ha pogut pujar el PDF. Revisa permisos del bucket.");
+    }
+  }
+
   function clearDemo() {
     setImpacts([]);
     setSelectedId(null);
@@ -474,13 +492,24 @@ export default function Home() {
                       separa PREMSA i ONLINE, crea fitxes i extreu les captures de pàgina.
                     </p>
 
+                    <div className="realUpload">
+                      <label>PDF real del recull</label>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)}
+                      />
+                      <button onClick={uploadRealPdf}>Pujar PDF real</button>
+                      {uploadMessage && <p>{uploadMessage}</p>}
+                    </div>
+
                     <div className="fakeUpload">
                       <span>Recull de premsa del 19 al 31 de gener.pdf</span>
-                      <button onClick={simulatePdfImport}>Simular importació</button>
+                      <button onClick={simulatePdfImport}>Simular importació demo</button>
                     </div>
 
                     <p className="smallNote">
-                      En la versió real: el PDF es guardarà a Supabase Storage, cada pàgina es renderitzarà com a imatge i cada impacte tindrà vinculada la seva captura.
+                      Ara el PDF real es guarda a Supabase Storage. El següent pas serà llegir-lo, separar pàgines i extreure les captures.
                     </p>
                   </div>
 

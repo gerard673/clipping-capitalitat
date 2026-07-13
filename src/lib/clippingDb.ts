@@ -142,3 +142,39 @@ export async function updateImpactInSupabase(id: string, fields: AnyImpact) {
     .update(partialImpactToDb(fields))
     .eq("id", id);
 }
+
+export async function uploadPdfRecullToSupabase(file: File) {
+  const safeName = file.name
+    .toLowerCase()
+    .replaceAll(" ", "-")
+    .replace(/[^a-z0-9._-]/g, "");
+
+  const path = `reculls/${Date.now()}-${safeName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("press-pdfs")
+    .upload(path, file, {
+      contentType: "application/pdf",
+      upsert: false,
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data: publicUrlData } = supabase.storage
+    .from("press-pdfs")
+    .getPublicUrl(path);
+
+  const { data: recull, error: recullError } = await supabase
+    .from("press_reculls")
+    .insert({
+      title: file.name.replace(".pdf", ""),
+      pdf_file_url: publicUrlData.publicUrl,
+      status: "pdf_pujat",
+    })
+    .select("id, title, pdf_file_url")
+    .single();
+
+  if (recullError) throw recullError;
+
+  return recull;
+}

@@ -876,3 +876,29 @@ textarea {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.realUpload {
+  margin-top: 26px;
+  border: 1px solid var(--line);
+  padding: 14px;
+  background: #fff;
+}
+
+.realUpload input {
+  margin-bottom: 12px;
+}
+
+.realUpload button {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--yellow);
+  padding: 12px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+
+.realUpload p {
+  margin: 10px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+}
