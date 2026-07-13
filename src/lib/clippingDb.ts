@@ -888,3 +888,52 @@ export async function importDetectedPdfPagesV3ToSupabase(
 
   return fetchImpactsFromSupabase();
 }
+
+export async function fetchRecullsFromSupabase() {
+  const { data, error } = await supabase
+    .from("press_reculls")
+    .select(`
+      id,
+      title,
+      period_start,
+      period_end,
+      pdf_file_url,
+      total_pages,
+      status,
+      created_at,
+      press_impacts(id)
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data ?? []).map((recull: any) => ({
+    id: recull.id,
+    title: recull.title,
+    periodStart: recull.period_start,
+    periodEnd: recull.period_end,
+    pdfFileUrl: recull.pdf_file_url,
+    totalPages: recull.total_pages,
+    status: recull.status,
+    createdAt: recull.created_at,
+    impactCount: recull.press_impacts?.length ?? 0,
+  }));
+}
+
+export async function updateRecullAfterProcessing(
+  recullId: string,
+  fields: {
+    totalPages?: number;
+    status?: string;
+  },
+) {
+  const { error } = await supabase
+    .from("press_reculls")
+    .update({
+      total_pages: fields.totalPages ?? null,
+      status: fields.status ?? "processat",
+    })
+    .eq("id", recullId);
+
+  if (error) throw error;
+}
