@@ -20,18 +20,6 @@ type PressRecull = {
   impactCount: number;
 };
 
-type PressRecull = {
-  id: string;
-  title: string;
-  periodStart?: string | null;
-  periodEnd?: string | null;
-  pdfFileUrl?: string | null;
-  totalPages?: number | null;
-  status?: string | null;
-  createdAt?: string | null;
-  impactCount: number;
-};
-
 type Impact = {
   id: string;
   recullId?: string;
