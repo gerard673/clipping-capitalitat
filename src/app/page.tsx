@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase } from "@/lib/clippingDb";
+import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase, importDetectedPdfPagesV3ToSupabase } from "@/lib/clippingDb";
+import { renderAndUploadPdfPages } from "@/lib/pdfPages";
 
 type Status = "pendent" | "revisat" | "validat" | "arxivat";
-type MediaType = "PREMSA" | "ONLINE";
+type MediaType = "PREMSA" | "ONLINE" | "PENDENT";
 type View = "reculls" | "revisio" | "cataleg" | "informe";
 
 type Impact = {
@@ -39,6 +40,10 @@ type Impact = {
   notes: string;
   summary: string;
   pageImage?: string;
+  sourceDomain?: string;
+  amd?: number;
+  tmu?: string;
+  detectedLinks?: string[];
 };
 
 const sampleImpacts: Impact[] = [
@@ -371,10 +376,21 @@ export default function Home() {
     try {
       setUploadMessage("Pujant PDF a Supabase...");
       const recull = await uploadPdfRecullToSupabase(pdfFile);
-      setUploadMessage(`PDF pujat correctament: ${recull.title}`);
+
+      setUploadMessage("PDF pujat. Convertint pàgines en imatges...");
+      const pages = await renderAndUploadPdfPages(pdfFile, recull.id);
+
+      setUploadMessage("Imatges i text extrets. Detectant mitjà, títol, URL i tipus de peça...");
+      const data = await importDetectedPdfPagesV3ToSupabase(recull.id, recull.title, pages);
+
+      setImpacts(data as Impact[]);
+      setSelectedId(data[0]?.id ?? null);
+      setView("revisio");
+
+      setUploadMessage(`PDF processat correctament: ${recull.title}`);
     } catch (error) {
-      console.error("Error pujant PDF:", error);
-      setUploadMessage("No s'ha pogut pujar el PDF. Revisa permisos del bucket.");
+      console.error("Error processant PDF:", error);
+      setUploadMessage("No s'ha pogut processar el PDF. Revisa bucket, polítiques o consola.");
     }
   }
 
@@ -431,6 +447,7 @@ export default function Home() {
               <label>Tipus</label>
               <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
                 <option value="">Tots</option>
+                <option value="PENDENT">PENDENT</option>
                 <option value="PREMSA">PREMSA</option>
                 <option value="ONLINE">ONLINE</option>
               </select>
@@ -551,13 +568,33 @@ export default function Home() {
                           <span>P.{reviewSelected.pdfPageStart}</span>
                         </div>
                         <div className="extractedImage">
-                          <span>CAPTURA EXTRETA DEL PDF</span>
+                          {reviewSelected.pageImage ? (
+                            <img src={reviewSelected.pageImage} alt={`Pàgina ${reviewSelected.pdfPageStart} del PDF`} />
+                          ) : (
+                            <span>CAPTURA EXTRETA DEL PDF</span>
+                          )}
                         </div>
                         <h1>{reviewSelected.title}</h1>
                         <p>{reviewSelected.summary}</p>
                       </div>
 
                       <div className="reviewFields">
+                        <label>Tipus de peça</label>
+                        <select
+                          value={reviewSelected.mediaType}
+                          onChange={(e) => updateImpact(reviewSelected.id, { mediaType: e.target.value as MediaType })}
+                        >
+                          <option value="PENDENT">PENDENT</option>
+                          <option value="PREMSA">PREMSA</option>
+                          <option value="ONLINE">ONLINE</option>
+                        </select>
+
+                        <label>Mitjà</label>
+                        <input value={reviewSelected.mediaName} onChange={(e) => updateImpact(reviewSelected.id, { mediaName: e.target.value })} />
+
+                        <label>Títol</label>
+                        <input value={reviewSelected.title} onChange={(e) => updateImpact(reviewSelected.id, { title: e.target.value })} />
+
                         <label>Campanya</label>
                         <input value={reviewSelected.campaign} onChange={(e) => updateImpact(reviewSelected.id, { campaign: e.target.value })} />
 
@@ -633,7 +670,7 @@ export default function Home() {
                 </div>
 
                 <div className="reportFilters">
-                  <Filter label="Tipus" value={reportType} setValue={setReportType} options={["PREMSA", "ONLINE"]} />
+                  <Filter label="Tipus" value={reportType} setValue={setReportType} options={["PENDENT", "PREMSA", "ONLINE"]} />
                   <Filter label="Estat" value={reportStatus} setValue={setReportStatus} options={["pendent", "revisat", "validat", "arxivat"]} />
                   <Filter label="Campanya" value={reportCampaign} setValue={setReportCampaign} options={campaigns} />
                   <Filter label="Territori" value={reportTerritory} setValue={setReportTerritory} options={territories} />
@@ -715,7 +752,10 @@ export default function Home() {
                 <Meta label="AVE" value={euros(selected.ave)} />
                 <Meta label="Audiència diària" value={money(selected.audienceDaily)} />
                 <Meta label="Audiència mensual" value={money(selected.audienceMonthly)} />
+                <Meta label="AMD" value={money(selected.amd)} />
+                <Meta label="TMU" value={selected.tmu ?? "—"} />
                 <Meta label="Valor mensual" value={euros(selected.economicMonthly)} />
+                <Meta label="Domini" value={selected.sourceDomain ?? "—"} />
                 <Meta
                   label="URL"
                   value={
