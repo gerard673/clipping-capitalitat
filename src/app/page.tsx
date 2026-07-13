@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase } from "@/lib/clippingDb";
 
 type Status = "pendent" | "revisat" | "validat" | "arxivat";
 type MediaType = "PREMSA" | "ONLINE";
@@ -293,16 +294,46 @@ export default function Home() {
   const totalOts = reportImpacts.reduce((sum, impact) => sum + (impact.ots ?? 0), 0);
   const totalDiffusion = reportImpacts.reduce((sum, impact) => sum + (impact.diffusion ?? 0), 0);
 
-  function simulatePdfImport() {
-    setImpacts(sampleImpacts);
-    setSelectedId(sampleImpacts[0].id);
-    setView("revisio");
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchImpactsFromSupabase()
+      .then((data) => {
+        if (cancelled) return;
+        setImpacts(data as Impact[]);
+        setSelectedId(data[0]?.id ?? null);
+      })
+      .catch((error) => {
+        console.error("Error carregant impactes:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function simulatePdfImport() {
+    try {
+      const data = await importSampleImpactsToSupabase(sampleImpacts);
+      setImpacts(data as Impact[]);
+      setSelectedId(data[0]?.id ?? null);
+      setView("revisio");
+    } catch (error) {
+      console.error("Error important recull:", error);
+      alert("No s'ha pogut importar el recull a Supabase. Mira la consola.");
+    }
   }
 
-  function updateImpact(id: string, fields: Partial<Impact>) {
+  async function updateImpact(id: string, fields: Partial<Impact>) {
     setImpacts((current) =>
       current.map((impact) => (impact.id === id ? { ...impact, ...fields } : impact)),
     );
+
+    const { error } = await updateImpactInSupabase(id, fields);
+
+    if (error) {
+      console.error("Error actualitzant impacte:", error);
+    }
   }
 
   function goNextInReview(currentId: string) {
