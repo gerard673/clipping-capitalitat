@@ -104,15 +104,31 @@ function partialImpactToDb(fields: AnyImpact) {
   return dbFields;
 }
 
+
 export async function fetchImpactsFromSupabase() {
-  const { data, error } = await supabase
-    .from("press_impacts")
-    .select("*, press_reculls(title)")
-    .order("created_at", { ascending: true });
+  const pageSize = 1000;
+  let from = 0;
+  const allRows: any[] = [];
 
-  if (error) throw error;
+  while (true) {
+    const to = from + pageSize - 1;
 
-  return (data ?? []).map(dbToImpact);
+    const { data, error } = await supabase
+      .from("press_impacts")
+      .select(`*, press_reculls(title)`)
+      .order("created_at", { ascending: true })
+      .range(from, to);
+
+    if (error) throw error;
+
+    allRows.push(...(data ?? []));
+
+    if (!data || data.length < pageSize) break;
+
+    from += pageSize;
+  }
+
+  return allRows.map(dbToImpact);
 }
 
 export async function importSampleImpactsToSupabase(sampleImpacts: AnyImpact[]) {
@@ -891,6 +907,7 @@ export async function importDetectedPdfPagesV3ToSupabase(
 }
 
 
+
 export async function fetchRecullsFromSupabase() {
   const { data: reculls, error: recullsError } = await supabase
     .from("press_reculls")
@@ -908,15 +925,30 @@ export async function fetchRecullsFromSupabase() {
 
   if (recullsError) throw recullsError;
 
-  const { data: impacts, error: impactsError } = await supabase
-    .from("press_impacts")
-    .select("recull_id");
+  const pageSize = 1000;
+  let from = 0;
+  const allImpacts: any[] = [];
 
-  if (impactsError) throw impactsError;
+  while (true) {
+    const to = from + pageSize - 1;
+
+    const { data, error } = await supabase
+      .from("press_impacts")
+      .select("recull_id")
+      .range(from, to);
+
+    if (error) throw error;
+
+    allImpacts.push(...(data ?? []));
+
+    if (!data || data.length < pageSize) break;
+
+    from += pageSize;
+  }
 
   const counts = new Map<string, number>();
 
-  for (const impact of impacts ?? []) {
+  for (const impact of allImpacts) {
     if (!impact.recull_id) continue;
     counts.set(impact.recull_id, (counts.get(impact.recull_id) ?? 0) + 1);
   }
@@ -997,23 +1029,39 @@ export async function deleteRecullFromSupabase(recullId: string) {
     .from("press_reculls")
     .select("id, pdf_file_url")
     .eq("id", recullId)
-    .single();
+    .maybeSingle();
 
   if (recullError) throw recullError;
 
   const pdfPath = storagePathFromPublicUrl(recull?.pdf_file_url, "press-pdfs");
 
   if (pdfPath) {
-    await supabase.storage.from("press-pdfs").remove([pdfPath]);
+    const { error } = await supabase.storage.from("press-pdfs").remove([pdfPath]);
+    if (error) console.warn("No s'ha pogut eliminar el PDF principal", error);
   }
 
   await removeStorageFolder("press-pdfs", `reculls/${recullId}`);
   await removeStorageFolder("press-page-images", `reculls/${recullId}`);
 
-  const { error: deleteError } = await supabase
+  const { error: impactsDeleteError } = await supabase
+    .from("press_impacts")
+    .delete()
+    .eq("recull_id", recullId);
+
+  if (impactsDeleteError) throw impactsDeleteError;
+
+  const { data: deletedReculls, error: deleteError } = await supabase
     .from("press_reculls")
     .delete()
-    .eq("id", recullId);
+    .eq("id", recullId)
+    .select("id");
 
   if (deleteError) throw deleteError;
+
+  if (!deletedReculls || deletedReculls.length === 0) {
+    throw new Error("No s'ha eliminat cap recull. Pot ser un problema de permisos RLS.");
+  }
+
+  return deletedReculls[0];
 }
+

@@ -1103,6 +1103,13 @@ export default function Home() {
     try {
       await deleteRecullFromSupabase(recull.id);
 
+      setReculls((current) => current.filter((item) => item.id !== recull.id));
+      setImpacts((current) => current.filter((impact) => impact.recullId !== recull.id));
+
+      if (archiveRecullId === recull.id) {
+        setArchiveRecullId("all");
+      }
+
       const [nextImpacts, nextReculls] = await Promise.all([
         fetchImpactsFromSupabase(),
         fetchRecullsFromSupabase(),
@@ -1111,14 +1118,10 @@ export default function Home() {
       setImpacts(nextImpacts as Impact[]);
       setReculls(nextReculls);
 
-      if (archiveRecullId === recull.id) {
-        setArchiveRecullId("all");
-      }
-
       setUploadMessage("Recull eliminat correctament.");
     } catch (error) {
       console.error(error);
-      alert("No s'ha pogut eliminar el recull.");
+      alert("No s'ha pogut eliminar el recull. Revisa els permisos DELETE de Supabase.");
       setUploadMessage("No s'ha pogut eliminar el recull.");
     }
   }
@@ -1349,7 +1352,7 @@ export default function Home() {
 
                                 <button
                                   onClick={() => {
-                                    setArchiveSearch(recull.title);
+                                    setArchiveSearch("");
                                     setView("cataleg");
                                   }}
                                 >
