@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
-import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase, importDetectedPdfPagesV3ToSupabase, fetchRecullsFromSupabase, updateRecullAfterProcessing } from "@/lib/clippingDb";
+import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase, importDetectedPdfPagesV3ToSupabase, fetchRecullsFromSupabase, updateRecullAfterProcessing,
+  deleteRecullFromSupabase,
+} from "@/lib/clippingDb";
 import { renderAndUploadPdfPages } from "@/lib/pdfPages";
 
 type Status = "pendent" | "revisat" | "validat" | "arxivat";
@@ -1088,6 +1090,40 @@ export default function Home() {
     setView("reculls");
   }
 
+
+  async function handleDeleteRecull(recull: PressRecull) {
+    const confirmed = window.confirm(
+      `Vols eliminar definitivament aquest recull?\n\n${recull.title}\n\nS'esborraran també tots els impactes, el PDF i tots els PNGs associats.`,
+    );
+
+    if (!confirmed) return;
+
+    setUploadMessage("Eliminant recull...");
+
+    try {
+      await deleteRecullFromSupabase(recull.id);
+
+      const [nextImpacts, nextReculls] = await Promise.all([
+        fetchImpactsFromSupabase(),
+        fetchRecullsFromSupabase(),
+      ]);
+
+      setImpacts(nextImpacts as Impact[]);
+      setReculls(nextReculls);
+
+      if (archiveRecullId === recull.id) {
+        setArchiveRecullId("all");
+      }
+
+      setUploadMessage("Recull eliminat correctament.");
+    } catch (error) {
+      console.error(error);
+      alert("No s'ha pogut eliminar el recull.");
+      setUploadMessage("No s'ha pogut eliminar el recull.");
+    }
+  }
+
+
   return (
     <main className={introLocked ? "scrollExperience introLocked" : "scrollExperience"}>
       <section className="landingHero">
@@ -1321,6 +1357,17 @@ export default function Home() {
                                 </button>
                               </div>
                             </div>
+                            <button
+                              className="deleteRecullCornerButton"
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleDeleteRecull(recull);
+                              }}
+                              title="Eliminar recull"
+                            >
+                              Eliminar recull
+                            </button>
                           </article>
                         ))}
                       </div>

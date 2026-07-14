@@ -952,3 +952,68 @@ export async function updateRecullAfterProcessing(
   if (error) throw error;
 }
 
+
+function storagePathFromPublicUrl(publicUrl: string | null | undefined, bucket: string) {
+  if (!publicUrl) return null;
+
+  try {
+    const url = new URL(publicUrl);
+    const marker = `/storage/v1/object/public/${bucket}/`;
+    const index = url.pathname.indexOf(marker);
+
+    if (index === -1) return null;
+
+    return decodeURIComponent(url.pathname.slice(index + marker.length));
+  } catch {
+    return null;
+  }
+}
+
+async function removeStorageFolder(bucket: string, folder: string) {
+  const { data, error } = await supabase.storage.from(bucket).list(folder, {
+    limit: 1000,
+  });
+
+  if (error) {
+    console.warn(`No s'ha pogut llistar ${bucket}/${folder}`, error);
+    return 0;
+  }
+
+  const paths = (data ?? [])
+    .filter((item) => item.name)
+    .map((item) => `${folder}/${item.name}`);
+
+  if (paths.length === 0) return 0;
+
+  const { error: removeError } = await supabase.storage.from(bucket).remove(paths);
+
+  if (removeError) throw removeError;
+
+  return paths.length;
+}
+
+export async function deleteRecullFromSupabase(recullId: string) {
+  const { data: recull, error: recullError } = await supabase
+    .from("press_reculls")
+    .select("id, pdf_file_url")
+    .eq("id", recullId)
+    .single();
+
+  if (recullError) throw recullError;
+
+  const pdfPath = storagePathFromPublicUrl(recull?.pdf_file_url, "press-pdfs");
+
+  if (pdfPath) {
+    await supabase.storage.from("press-pdfs").remove([pdfPath]);
+  }
+
+  await removeStorageFolder("press-pdfs", `reculls/${recullId}`);
+  await removeStorageFolder("press-page-images", `reculls/${recullId}`);
+
+  const { error: deleteError } = await supabase
+    .from("press_reculls")
+    .delete()
+    .eq("id", recullId);
+
+  if (deleteError) throw deleteError;
+}

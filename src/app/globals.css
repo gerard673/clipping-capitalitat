@@ -5491,3 +5491,108 @@ body.intro-is-locked .content:has(.reviewStudio) .right {
 .landingScrollHint i {
   background: #e30613 !important;
 }
+
+/* --- DELETE RECULL BUTTON ON IMPORT CARD --- */
+
+.importPage article,
+.recullCard,
+.importedRecull,
+.recullItem {
+  position: relative !important;
+}
+
+.deleteRecullCornerButton {
+  position: absolute !important;
+  top: -1px !important;
+  right: -1px !important;
+  bottom: -1px !important;
+  width: 46px !important;
+  border: 1px solid #e30613 !important;
+  background: #fff !important;
+  color: #e30613 !important;
+  font-family: inherit !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+  writing-mode: vertical-rl !important;
+  transform: rotate(180deg) !important;
+  cursor: pointer !important;
+  z-index: 20 !important;
+}
+
+.deleteRecullCornerButton:hover {
+  background: #e30613 !important;
+  color: #fff !important;
+}
+
+/* --- FORCE DELETE RECULL BUTTON VISIBLE --- */
+
+.importPage article {
+  position: relative !important;
+  padding-right: 58px !important;
+}
+
+.deleteRecullCornerButton {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 46px !important;
+  min-height: 100% !important;
+  border: 1px solid #e30613 !important;
+  background: #fff !important;
+  color: #e30613 !important;
+  font-family: inherit !important;
+  font-size: 9px !important;
+  line-height: 1.05 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+  writing-mode: vertical-rl !important;
+  transform: rotate(180deg) !important;
+  cursor: pointer !important;
+  z-index: 999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.deleteRecullCornerButton:hover {
+  background: #e30613 !important;
+  color: #fff !important;
+}
+
+/* --- DELETE RECULL BUTTON FINAL --- */
+
+.recullCard {
+  position: relative !important;
+  padding-right: 58px !important;
+}
+
+.deleteRecullCornerButton {
+  position: absolute !important;
+  top: -1px !important;
+  right: -1px !important;
+  bottom: -1px !important;
+  width: 46px !important;
+  border: 1px solid #e30613 !important;
+  background: #fff !important;
+  color: #e30613 !important;
+  font-family: inherit !important;
+  font-size: 9px !important;
+  line-height: 1.05 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+  writing-mode: vertical-rl !important;
+  transform: rotate(180deg) !important;
+  cursor: pointer !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.deleteRecullCornerButton:hover {
+  background: #e30613 !important;
+  color: #fff !important;
+}
