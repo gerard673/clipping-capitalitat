@@ -5596,3 +5596,23 @@ body.intro-is-locked .content:has(.reviewStudio) .right {
   background: #e30613 !important;
   color: #fff !important;
 }
+
+/* --- REVIEW ACTION BAR: 5 BUTTONS WITH VALIDATE BUTTON --- */
+
+.content:has(.reviewStudio) .reviewActions,
+.content:has(.reviewStudio) .actionBar,
+.content:has(.reviewStudio) .reviewActionBar {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+.validateNextButton {
+  background: #ffd400 !important;
+  color: #000 !important;
+  border-color: #000 !important;
+  font-weight: 900 !important;
+}
+
+.validateNextButton:hover {
+  background: #000 !important;
+  color: #ffd400 !important;
+}

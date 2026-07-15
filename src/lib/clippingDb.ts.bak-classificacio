@@ -2,18 +2,6 @@ import { supabase } from "@/lib/supabase";
 
 type AnyImpact = Record<string, any>;
 
-
-function uniqueRowsById<T extends { id?: string }>(rows: T[]) {
-  const map = new Map<string, T>();
-
-  for (const row of rows) {
-    if (!row?.id) continue;
-    map.set(row.id, row);
-  }
-
-  return Array.from(map.values());
-}
-
 function dbToImpact(row: any): AnyImpact {
   return {
     id: row.id,
@@ -129,7 +117,6 @@ export async function fetchImpactsFromSupabase() {
       .from("press_impacts")
       .select(`*, press_reculls(title)`)
       .order("created_at", { ascending: true })
-      .order("id", { ascending: true })
       .range(from, to);
 
     if (error) throw error;
@@ -141,7 +128,7 @@ export async function fetchImpactsFromSupabase() {
     from += pageSize;
   }
 
-  return uniqueRowsById(allRows).map(dbToImpact);
+  return allRows.map(dbToImpact);
 }
 
 export async function importSampleImpactsToSupabase(sampleImpacts: AnyImpact[]) {
@@ -373,66 +360,6 @@ function findPrintedTitle(lines: string[]) {
   );
 }
 
-
-function normalizeMediaRuleValue(value: string) {
-  return String(value || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[’']/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-const TV_MEDIA_PATTERNS = [
-  "3cat.cat",
-  "3cat cat",
-  "TV3",
-  "europapress.tv",
-  "europapress tv",
-  "rtve.es",
-  "rtve es",
-  "plastico.tv",
-  "plastico tv",
-  "tvsantcugat.cat",
-  "tvsantcugat cat",
-  "Betevé",
-  "Beteve",
-];
-
-const RADIO_MEDIA_PATTERNS = [
-  "Catalunya Ràdio",
-  "Catalunya Radio",
-  "nuevaradio.org",
-  "nuevaradio org",
-  "capitalradio.es",
-  "capitalradio es",
-  "RAC 1",
-  "RAC1",
-];
-
-function textMatchesAnyMediaPattern(text: string, patterns: string[]) {
-  const raw = String(text || "").toLowerCase();
-  const normalized = normalizeMediaRuleValue(text);
-
-  return patterns.some((pattern) => {
-    const rawPattern = String(pattern || "").toLowerCase();
-    const normalizedPattern = normalizeMediaRuleValue(pattern);
-
-    return (
-      raw.includes(rawPattern) ||
-      normalized.includes(normalizedPattern)
-    );
-  });
-}
-
-function detectForcedPieceType(text: string) {
-  if (textMatchesAnyMediaPattern(text, TV_MEDIA_PATTERNS)) return "TV";
-  if (textMatchesAnyMediaPattern(text, RADIO_MEDIA_PATTERNS)) return "RADIO";
-  return null;
-}
-
-
 function detectKnownMedia(text: string) {
   const known = [
     "La Vanguardia",
@@ -550,7 +477,7 @@ function detectPageImpact(page: { pageNumber: number; imageUrl: string; text: st
     const mediaName = findOnlineMediaName(lines);
 
     return {
-      media_type: detectForcedPieceType(text) ?? "ONLINE",
+      media_type: "ONLINE",
       media_name: mediaName,
       title,
       status: "pendent",
@@ -575,7 +502,7 @@ function detectPageImpact(page: { pageNumber: number; imageUrl: string; text: st
   const ave = toNumber(text.match(/AVE:\s*([\d.,]+)/i)?.[1]);
 
   return {
-    media_type: detectForcedPieceType(text) ?? "PREMSA",
+    media_type: "PREMSA",
     media_name: mediaName,
     title,
     status: "pendent",
@@ -869,7 +796,7 @@ function detectPageV3(page: { pageNumber: number; imageUrl: string; text: string
     const mediaName = mediaFromOnlineText(text, lines, sourceDomain);
 
     return {
-      media_type: detectForcedPieceType(text) ?? "ONLINE",
+      media_type: "ONLINE",
       media_name: mediaName,
       title,
       published_at: extractDate(text) ?? "",
@@ -897,7 +824,7 @@ function detectPageV3(page: { pageNumber: number; imageUrl: string; text: string
   const knownMedia = detectKnownMediaV3(text);
 
   return {
-    media_type: detectForcedPieceType(text) ?? "PREMSA",
+    media_type: "PREMSA",
     media_name: knownMedia ?? "Mitjà pendent",
     title,
     published_at: extractDate(text) ?? "",
@@ -1136,77 +1063,5 @@ export async function deleteRecullFromSupabase(recullId: string) {
   }
 
   return deletedReculls[0];
-}
-
-
-export async function mergeImpactWithNextPageInSupabase(impactId: string) {
-  const { data: current, error: currentError } = await supabase
-    .from("press_impacts")
-    .select("id, recull_id, pdf_page_start, pdf_page_end, extracted_text, detected_links")
-    .eq("id", impactId)
-    .single();
-
-  if (currentError) throw currentError;
-  if (!current) throw new Error("No s'ha trobat l'impacte actual.");
-
-  const currentEnd = current.pdf_page_end || current.pdf_page_start;
-  const nextPage = Number(currentEnd || 0) + 1;
-
-  if (!current.recull_id || !nextPage) {
-    throw new Error("Aquest impacte no té recull o pàgina associada.");
-  }
-
-  const { data: next, error: nextError } = await supabase
-    .from("press_impacts")
-    .select("id, recull_id, pdf_page_start, pdf_page_end, extracted_text, detected_links")
-    .eq("recull_id", current.recull_id)
-    .eq("pdf_page_start", nextPage)
-    .maybeSingle();
-
-  if (nextError) throw nextError;
-
-  if (!next) {
-    throw new Error(`No hi ha cap impacte a la pàgina següent (${nextPage}) per unir.`);
-  }
-
-  const mergedLinks = Array.from(
-    new Set([
-      ...((current.detected_links ?? []) as string[]),
-      ...((next.detected_links ?? []) as string[]),
-    ]),
-  );
-
-  const mergedText = [
-    current.extracted_text,
-    next.extracted_text,
-  ]
-    .filter(Boolean)
-    .join("\n\n--- PÀGINA UNIDA ---\n\n");
-
-  const { error: updateError } = await supabase
-    .from("press_impacts")
-    .update({
-      pdf_page_end: next.pdf_page_end || next.pdf_page_start,
-      extracted_text: mergedText || null,
-      detected_links: mergedLinks,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", current.id);
-
-  if (updateError) throw updateError;
-
-  const { error: deleteError } = await supabase
-    .from("press_impacts")
-    .delete()
-    .eq("id", next.id);
-
-  if (deleteError) throw deleteError;
-
-  return {
-    keptImpactId: current.id,
-    deletedImpactId: next.id,
-    pageStart: current.pdf_page_start,
-    pageEnd: next.pdf_page_end || next.pdf_page_start,
-  };
 }
 

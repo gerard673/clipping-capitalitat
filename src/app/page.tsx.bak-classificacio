@@ -3,13 +3,11 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { fetchImpactsFromSupabase, importSampleImpactsToSupabase, updateImpactInSupabase, uploadPdfRecullToSupabase, importDetectedPdfPagesV3ToSupabase, fetchRecullsFromSupabase, updateRecullAfterProcessing,
   deleteRecullFromSupabase,
-  mergeImpactWithNextPageInSupabase,
 } from "@/lib/clippingDb";
 import { renderAndUploadPdfPages } from "@/lib/pdfPages";
 
 type Status = "pendent" | "revisat" | "validat" | "arxivat";
-const PIECE_TYPES = ["PENDENT", "ONLINE", "PREMSA", "TV", "RADIO", "REVISTA"] as const;
-type MediaType = (typeof PIECE_TYPES)[number];
+type MediaType = "PREMSA" | "ONLINE" | "PENDENT";
 type View = "reculls" | "revisio" | "cataleg" | "informe";
 
 type PressRecull = {
@@ -713,8 +711,6 @@ export default function Home() {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [campaignFilter, setCampaignFilter] = useState("");
-  const [pendingTypeFilter, setPendingTypeFilter] = useState("");
-  const [pendingMediaFilter, setPendingMediaFilter] = useState("");
 
   const [reportType, setReportType] = useState("");
   const [reportStatus, setReportStatus] = useState("");
@@ -743,12 +739,10 @@ export default function Home() {
       return (
         (!typeFilter || impact.mediaType === typeFilter) &&
         (!statusFilter || impact.status === statusFilter) &&
-        (!campaignFilter || impact.campaign === campaignFilter) &&
-        (!pendingTypeFilter || (pendingTypeFilter === "pending" ? isPendingPieceType(impact) : !isPendingPieceType(impact))) &&
-        (!pendingMediaFilter || (pendingMediaFilter === "pending" ? isPendingMedia(impact) : !isPendingMedia(impact)))
+        (!campaignFilter || impact.campaign === campaignFilter)
       );
     });
-  }, [impacts, typeFilter, statusFilter, campaignFilter, pendingTypeFilter, pendingMediaFilter]);
+  }, [impacts, typeFilter, statusFilter, campaignFilter]);
 
   const reportImpacts = useMemo(() => {
     return impacts.filter((impact) => {
@@ -987,7 +981,7 @@ export default function Home() {
 
   function validateReview() {
     if (!reviewSelected) return;
-    if (!validateImpactClassification(reviewSelected)) return;
+    updateImpact(reviewSelected.id, { status: "validat" });
     goNextInReview(reviewSelected.id);
   }
 
@@ -1094,66 +1088,6 @@ export default function Home() {
     setImpacts([]);
     setSelectedId(null);
     setView("reculls");
-  }
-
-
-
-  function isPendingPieceType(impact: any) {
-    return !impact?.mediaType || impact.mediaType === "PENDENT";
-  }
-
-  function isPendingMedia(impact: any) {
-    const mediaName = String(impact?.mediaName || "").trim().toLowerCase();
-
-    return (
-      !mediaName ||
-      mediaName === "pendent" ||
-      mediaName === "mitjà pendent" ||
-      mediaName === "mitja pendent" ||
-      mediaName.includes("pendent")
-    );
-  }
-
-  function canValidateImpact(impact: any) {
-    return !isPendingPieceType(impact) && !isPendingMedia(impact);
-  }
-
-  function validateImpactClassification(impact: any) {
-    if (!impact) return false;
-
-    if (!canValidateImpact(impact)) {
-      alert("No es pot validar aquest impacte: falta classificar el tipus de peça o el mitjà.");
-      return false;
-    }
-
-    updateImpact(impact.id, { status: "validat" });
-    return true;
-  }
-
-  async function handleMergeWithNextPage() {
-    if (!reviewSelected) return;
-
-    const confirmed = window.confirm(
-      `Vols unir aquest impacte amb la pàgina següent?\n\nEs conservarà aquest impacte i s'eliminarà l'impacte de la pàgina següent.`,
-    );
-
-    if (!confirmed) return;
-
-    try {
-      await mergeImpactWithNextPageInSupabase(reviewSelected.id);
-
-      const [nextImpacts, nextReculls] = await Promise.all([
-        fetchImpactsFromSupabase(),
-        fetchRecullsFromSupabase(),
-      ]);
-
-      setImpacts(nextImpacts as Impact[]);
-      setReculls(nextReculls);
-      setUploadMessage("Pàgines unides correctament.");
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "No s'han pogut unir les pàgines.");
-    }
   }
 
 
@@ -1342,25 +1276,6 @@ export default function Home() {
 
                     <div className="realUpload refinedUpload">
                       <label>PDF real del recull</label>
-
-              <label>
-                <span>Tipus pendent</span>
-                <select value={pendingTypeFilter} onChange={(event) => setPendingTypeFilter(event.target.value)}>
-                  <option value="">Tots</option>
-                  <option value="pending">Només tipus pendent</option>
-                  <option value="classified">Només tipus classificat</option>
-                </select>
-              </label>
-
-              <label>
-                <span>Mitjà pendent</span>
-                <select value={pendingMediaFilter} onChange={(event) => setPendingMediaFilter(event.target.value)}>
-                  <option value="">Tots</option>
-                  <option value="pending">Només mitjà pendent</option>
-                  <option value="classified">Només mitjà classificat</option>
-                </select>
-              </label>
-
                       <input
                         type="file"
                         accept="application/pdf"
@@ -1587,17 +1502,11 @@ export default function Home() {
                           <label>Tipus de peça</label>
                           <select
                             value={reviewSelected.mediaType}
-                            onChange={(e) =>
-                              updateImpact(reviewSelected.id, {
-                                mediaType: e.target.value as MediaType,
-                              })
-                            }
+                            onChange={(e) => updateImpact(reviewSelected.id, { mediaType: e.target.value as MediaType })}
                           >
-                            {PIECE_TYPES.map((type) => (
-                              <option key={type} value={type}>
-                                {type}
-                              </option>
-                            ))}
+                            <option value="PENDENT">PENDENT</option>
+                            <option value="PREMSA">PREMSA</option>
+                            <option value="ONLINE">ONLINE</option>
                           </select>
 
                           <label>Mitjà</label>
@@ -1665,10 +1574,6 @@ export default function Home() {
                     <div className="reviewActionBar">
                       <button onClick={archiveReview}>Descartar</button>
                       <button onClick={skipReview}>Saltar</button>
-                      <button onClick={handleMergeWithNextPage}>
-                        Unir amb pàgina següent
-                      </button>
-
                       <button onClick={() => updateImpact(reviewSelected.id, { status: "revisat" })}>
                         Marcar revisat
                       </button>
@@ -1800,7 +1705,7 @@ export default function Home() {
                         <button onClick={() => updateImpact(archiveSelected.id, { status: "pendent" })}>
                           Tornar a cua
                         </button>
-                        <button onClick={() => validateImpactClassification(archiveSelected)}>
+                        <button onClick={() => updateImpact(archiveSelected.id, { status: "validat" })}>
                           Validar
                         </button>
                       </div>
