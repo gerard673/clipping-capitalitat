@@ -804,10 +804,6 @@ export default function Home() {
     return impacts.filter((impact) => {
       if (impact.status === "validat" || impact.status === "arxivat") return false;
 
-      if (typeFilter && impact.mediaType !== typeFilter) return false;
-      if (statusFilter && impact.status !== statusFilter) return false;
-      if (campaignFilter && impact.campaign !== campaignFilter) return false;
-
       const mediaName = String(impact.mediaName || "").trim().toLowerCase();
       const mediaIsPending =
         !mediaName ||
@@ -816,7 +812,15 @@ export default function Home() {
         mediaName === "mitja pendent" ||
         mediaName.includes("pendent");
 
-      const typeIsPending = !impact.mediaType || impact.mediaType === "PENDENT";
+      const typeValue = String(impact.mediaType || "").trim().toUpperCase();
+      const typeIsPending = !typeValue || typeValue === "PENDENT";
+
+      // IMPORTANT:
+      // Si estàs editant aquest impacte, no el fem desaparèixer encara que deixi de complir el filtre.
+
+      if (typeFilter && impact.mediaType !== typeFilter) return false;
+      if (statusFilter && impact.status !== statusFilter) return false;
+      if (campaignFilter && impact.campaign !== campaignFilter) return false;
 
       if (pendingMediaFilter === "pending" && !mediaIsPending) return false;
       if (pendingMediaFilter === "classified" && mediaIsPending) return false;
@@ -1365,7 +1369,9 @@ export default function Home() {
                 <button
                   key={impact.id}
                   className={`impactItem ${reviewSelected?.id === impact.id ? "selected" : ""}`}
-                  onClick={() => setSelectedId(impact.id)}
+                  onClick={() => {
+                    setSelectedId(impact.id);
+                  }}
                 >
                   <div>
                     <strong>{impact.mediaName || "Mitjà pendent"}</strong>
@@ -1669,8 +1675,20 @@ export default function Home() {
 
                           <label>Mitjà</label>
                           <input
-                            value={reviewSelected.mediaName}
-                            onChange={(e) => updateImpact(reviewSelected.id, { mediaName: e.target.value })}
+                            key={`media-${reviewSelected.id}`}
+                            defaultValue={reviewSelected.mediaName || ""}
+                            onBlur={(e) => {
+                              const nextMediaName = e.currentTarget.value.trim();
+
+                              updateImpact(reviewSelected.id, {
+                                mediaName: nextMediaName || "Mitjà pendent",
+                              });
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.currentTarget.blur();
+                              }
+                            }}
                           />
 
                           <label>Títol</label>
