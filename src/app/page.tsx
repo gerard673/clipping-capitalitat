@@ -713,6 +713,7 @@ export default function Home() {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [campaignFilter, setCampaignFilter] = useState("");
+  const [reviewFiltersOpen, setReviewFiltersOpen] = useState(true);
   const [pendingTypeFilter, setPendingTypeFilter] = useState("");
   const [pendingMediaFilter, setPendingMediaFilter] = useState("");
 
@@ -800,8 +801,39 @@ export default function Home() {
   }, [impacts, archiveSearch, archiveType, archiveStatus, archiveCampaign, archiveImportance, archiveRecullId, archivePhotoFilter]);
 
   const reviewQueue = useMemo(() => {
-    return impacts.filter((impact) => impact.status !== "validat" && impact.status !== "arxivat");
-  }, [impacts]);
+    return impacts.filter((impact) => {
+      if (impact.status === "validat" || impact.status === "arxivat") return false;
+
+      if (typeFilter && impact.mediaType !== typeFilter) return false;
+      if (statusFilter && impact.status !== statusFilter) return false;
+      if (campaignFilter && impact.campaign !== campaignFilter) return false;
+
+      const mediaName = String(impact.mediaName || "").trim().toLowerCase();
+      const mediaIsPending =
+        !mediaName ||
+        mediaName === "pendent" ||
+        mediaName === "mitjà pendent" ||
+        mediaName === "mitja pendent" ||
+        mediaName.includes("pendent");
+
+      const typeIsPending = !impact.mediaType || impact.mediaType === "PENDENT";
+
+      if (pendingMediaFilter === "pending" && !mediaIsPending) return false;
+      if (pendingMediaFilter === "classified" && mediaIsPending) return false;
+
+      if (pendingTypeFilter === "pending" && !typeIsPending) return false;
+      if (pendingTypeFilter === "classified" && typeIsPending) return false;
+
+      return true;
+    });
+  }, [
+    impacts,
+    typeFilter,
+    statusFilter,
+    campaignFilter,
+    pendingMediaFilter,
+    pendingTypeFilter,
+  ]);
 
   const selected =
     impacts.find((impact) => impact.id === selectedId) ??
@@ -1257,60 +1289,95 @@ export default function Home() {
 
         <div className={view === "informe" || view === "cataleg" || view === "reculls" ? "content reportMode" : "content"}>
           <aside className="left">
-            <div className="panelHead">
-              <h2>Impactes detectats</h2>
-              <span>{filtered.length}</span>
+            <div className="panelHeader">
+              <span>Impactes detectats</span>
+              <b>{reviewQueue.length}</b>
             </div>
 
-            <div className="filters">
-              <label>Tipus</label>
-              <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
-                <option value="">Tots</option>
-                <option value="PENDENT">PENDENT</option>
-                <option value="PREMSA">PREMSA</option>
-                <option value="ONLINE">ONLINE</option>
-              </select>
+            <div className="reviewFilterPanel">
+              <button
+                type="button"
+                className="reviewFilterToggle"
+                onClick={() => setReviewFiltersOpen((value) => !value)}
+              >
+                <span>Filtres</span>
+                <b>{reviewFiltersOpen ? "Amagar" : "Mostrar"}</b>
+              </button>
 
-              <label>Estat</label>
-              <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-                <option value="">Tots</option>
-                <option value="pendent">Pendent</option>
-                <option value="revisat">Revisat</option>
-                <option value="validat">Validat</option>
-                <option value="arxivat">Arxivat</option>
-              </select>
+              {reviewFiltersOpen && (
+                <div className="reviewFilterBody">
+                  <label>
+                    <span>Tipus</span>
+                    <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+                      <option value="">Tots</option>
+                      {PIECE_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
-              <label>Campanya</label>
-              <select value={campaignFilter} onChange={(event) => setCampaignFilter(event.target.value)}>
-                <option value="">Totes</option>
-                {campaigns.map((campaign) => (
-                  <option key={campaign}>{campaign}</option>
-                ))}
-              </select>
+                  <label>
+                    <span>Estat</span>
+                    <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                      <option value="">Tots</option>
+                      <option value="pendent">Pendent</option>
+                      <option value="revisat">Revisat</option>
+                      <option value="validat">Validat</option>
+                      <option value="arxivat">Arxivat</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>Campanya</span>
+                    <select value={campaignFilter} onChange={(event) => setCampaignFilter(event.target.value)}>
+                      <option value="">Totes</option>
+                      <option value="Pendent">Pendent</option>
+                      <option value="Capitalitat">Capitalitat</option>
+                      <option value="Barcelona 2026">Barcelona 2026</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>Tipus pendent</span>
+                    <select value={pendingTypeFilter} onChange={(event) => setPendingTypeFilter(event.target.value)}>
+                      <option value="">Tots</option>
+                      <option value="pending">Només tipus pendent</option>
+                      <option value="classified">Només tipus classificat</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>Mitjà pendent</span>
+                    <select value={pendingMediaFilter} onChange={(event) => setPendingMediaFilter(event.target.value)}>
+                      <option value="">Tots</option>
+                      <option value="pending">Només mitjà pendent</option>
+                      <option value="classified">Només mitjà classificat</option>
+                    </select>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="impactList">
-              {filtered.length === 0 ? (
-                <div className="empty">Encara no hi ha impactes. Importa un recull PDF.</div>
-              ) : (
-                filtered.map((impact) => (
-                  <button
-                    key={impact.id}
-                    className={selected?.id === impact.id ? "impact active" : "impact"}
-                    onClick={() => setSelectedId(impact.id)}
-                  >
-                    <div className="impactTop">
-                      <b>{impact.mediaName}</b>
-                      <span className={`badge ${impact.status}`}>{impact.status}</span>
-                    </div>
-                    <strong>{impact.title}</strong>
-                    <small>
-                      P.{impact.pdfPageStart}
-                      {impact.pdfPageEnd ? `–${impact.pdfPageEnd}` : ""} · {impact.mediaType} · {impact.publishedAt}
-                    </small>
-                  </button>
-                ))
-              )}
+              {reviewQueue.map((impact) => (
+                <button
+                  key={impact.id}
+                  className={`impactItem ${reviewSelected?.id === impact.id ? "selected" : ""}`}
+                  onClick={() => setSelectedId(impact.id)}
+                >
+                  <div>
+                    <strong>{impact.mediaName || "Mitjà pendent"}</strong>
+                    <span className={`badge ${impact.status}`}>{impact.status}</span>
+                  </div>
+                  <h3>{impact.title || "Títol pendent"}</h3>
+                  <p>
+                    P. {impact.pdfPageStart}
+                    {impact.pdfPageEnd ? `–${impact.pdfPageEnd}` : ""} · {impact.mediaType} · {impact.publishedAt}
+                  </p>
+                </button>
+              ))}
             </div>
           </aside>
 
