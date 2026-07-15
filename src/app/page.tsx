@@ -704,7 +704,7 @@ export default function Home() {
   const [view, setView] = useState<View>("reculls");
   const [impacts, setImpacts] = useState<Impact[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfFiles, setPdfFiles] = useState<File[]>([]);
   const [uploadMessage, setUploadMessage] = useState("");
   const [reculls, setReculls] = useState<PressRecull[]>([]);
   const [backdropImageIds, setBackdropImageIds] = useState<string[]>([]);
@@ -1041,32 +1041,52 @@ export default function Home() {
   }
 
   async function uploadRealPdf() {
-    if (!pdfFile) {
-      setUploadMessage("Selecciona primer un PDF.");
+    if (pdfFiles.length === 0) {
+      setUploadMessage("Selecciona primer un o més PDFs.");
       return;
     }
 
+    const total = pdfFiles.length;
+    let processed = 0;
+
     try {
-      setUploadMessage("Pujant PDF a Supabase...");
-      const recull = await uploadPdfRecullToSupabase(pdfFile);
+      for (let index = 0; index < pdfFiles.length; index++) {
+        const file = pdfFiles[index];
+        const current = index + 1;
 
-      setUploadMessage("PDF pujat. Convertint pàgines en imatges...");
-      const pages = await renderAndUploadPdfPages(pdfFile, recull.id);
+        setUploadMessage(`Pujant PDF ${current}/${total}: ${file.name}`);
+        const recull = await uploadPdfRecullToSupabase(file);
 
-      setUploadMessage("Imatges i text extrets. Detectant mitjà, títol, URL i tipus de peça...");
-      const data = await importDetectedPdfPagesV3ToSupabase(recull.id, recull.title, pages);
+        setUploadMessage(`PDF ${current}/${total} pujat. Convertint pàgines en imatges: ${file.name}`);
+        const pages = await renderAndUploadPdfPages(file, recull.id);
 
-      setImpacts(data as Impact[]);
-      setSelectedId(data[0]?.id ?? null);
+        setUploadMessage(`PDF ${current}/${total}. Detectant mitjà, títol, URL i tipus de peça: ${file.name}`);
+        await importDetectedPdfPagesV3ToSupabase(recull.id, recull.title, pages);
+
+        processed++;
+        setUploadMessage(`PDF ${current}/${total} processat correctament: ${recull.title}`);
+      }
+
+      const nextImpacts = (await fetchImpactsFromSupabase()) as Impact[];
+      const nextReculls = (await fetchRecullsFromSupabase()) as PressRecull[];
+
+      setImpacts(nextImpacts);
+      setReculls(nextReculls);
+      setSelectedId(nextImpacts.find((impact) => impact.status !== "validat" && impact.status !== "arxivat")?.id ?? nextImpacts[0]?.id ?? null);
       setView("revisio");
+      setPdfFiles([]);
 
-      const updatedReculls = await fetchRecullsFromSupabase();
-      setReculls(updatedReculls as PressRecull[]);
-
-      setUploadMessage(`PDF processat correctament: ${recull.title}`);
+      setUploadMessage(`Importació completa: ${processed}/${total} PDFs processats correctament.`);
     } catch (error) {
-      console.error("Error processant PDF:", error);
-      setUploadMessage("No s'ha pogut processar el PDF. Revisa bucket, polítiques o consola.");
+      console.error("Error processant PDFs:", error);
+
+      const nextImpacts = (await fetchImpactsFromSupabase()) as Impact[];
+      const nextReculls = (await fetchRecullsFromSupabase()) as PressRecull[];
+
+      setImpacts(nextImpacts);
+      setReculls(nextReculls);
+
+      setUploadMessage(`S'ha aturat la importació. PDFs processats abans de l'error: ${processed}/${total}. Revisa la consola.`);
     }
   }
 
@@ -1415,39 +1435,49 @@ export default function Home() {
 
                     <div className="realUpload refinedUpload">
                       <label>PDF real del recull</label>
+<input
+                          type="file"
+                          accept="application/pdf"
+                          multiple
+                          onChange={(event) => {
+                            const selectedFiles = Array.from(event.target.files ?? []).filter(
+                              (file) =>
+                                file.type === "application/pdf" ||
+                                file.name.toLowerCase().endsWith(".pdf"),
+                            );
 
-              <label>
-                <span>Tipus pendent</span>
-                <select value={pendingTypeFilter} onChange={(event) => setPendingTypeFilter(event.target.value)}>
-                  <option value="">Tots</option>
-                  <option value="pending">Només tipus pendent</option>
-                  <option value="classified">Només tipus classificat</option>
-                </select>
-              </label>
+                            setPdfFiles(selectedFiles);
+                            setUploadMessage(
+                              selectedFiles.length === 0
+                                ? ""
+                                : `${selectedFiles.length} PDF${selectedFiles.length === 1 ? "" : "s"} seleccionat${selectedFiles.length === 1 ? "" : "s"}.`,
+                            );
+                          }}
+                        />
 
-              <label>
-                <span>Mitjà pendent</span>
-                <select value={pendingMediaFilter} onChange={(event) => setPendingMediaFilter(event.target.value)}>
-                  <option value="">Tots</option>
-                  <option value="pending">Només mitjà pendent</option>
-                  <option value="classified">Només mitjà classificat</option>
-                </select>
-              </label>
+                      {pdfFiles.length > 0 && (
+                          <div className="selectedFile selectedFiles">
+                            <b>
+                              {pdfFiles.length === 1
+                                ? pdfFiles[0].name
+                                : `${pdfFiles.length} PDFs seleccionats`}
+                            </b>
+                            <span>
+                              {Math.round(
+                                pdfFiles.reduce((totalSize, file) => totalSize + file.size, 0) /
+                                  1024 /
+                                  1024 *
+                                  10,
+                              ) / 10} MB totals
+                            </span>
+                            <small>
+                              {pdfFiles.slice(0, 5).map((file) => file.name).join(" · ")}
+                              {pdfFiles.length > 5 ? ` · +${pdfFiles.length - 5} més` : ""}
+                            </small>
+                          </div>
+                        )}
 
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)}
-                      />
-
-                      {pdfFile && (
-                        <div className="selectedFile">
-                          <b>{pdfFile.name}</b>
-                          <span>{Math.round(pdfFile.size / 1024 / 1024 * 10) / 10} MB</span>
-                        </div>
-                      )}
-
-                      <button onClick={uploadRealPdf}>Pujar i processar PDF</button>
+                      <button onClick={uploadRealPdf}>Pujar i processar PDFs</button>
 
                       {uploadMessage && <p>{uploadMessage}</p>}
                     </div>
